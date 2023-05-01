@@ -5,12 +5,28 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class CustomFunction {
+public class DelegateContainer<T> {
 
-    public delegate void CustomDelegate();
-    public CustomDelegate customDelegate;
+    public delegate T customDelegate(UAIBehaviour behaviour);
 
-    public string name = "Ben";
+    public customDelegate delegateCall;
+
+    [SerializeField]
+    private GameObject delegateObject;
+    [SerializeField]
+    private MonoBehaviour delegateScript;
+
+    [SerializeField]
+    private string delegateMethodName;
+
+    public void Init()
+    {
+        if(delegateObject != null)
+        {
+            delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), delegateObject, delegateMethodName);
+        }
+    }
+
 }
 
 
@@ -31,15 +47,15 @@ public class UAIBehaviour
     public float valueRangeMin = 0f;
     public float valueRangeMax = 1f;
 
-    // Conditions that when any are met, will stop this behaviour
-    [SerializeField]
-    private CustomFunction customFunction;
 
-    public delegate bool ConditionAction(float currentValue, float rawCurrentValue);
+
+    public delegate bool ConditionAction(UAIBehaviour behaviour);
     public List<ConditionAction> InterruptConditions;
 
+    public delegate float EvaluationAction(UAIBehaviour behaviour);
+    // Conditions that when any are met, will stop this behaviour
     [SerializeField]
-    public delegate float EvaluationAction();
+    private DelegateContainer<float> evaluator;
     public EvaluationAction Evaluater;
 
     public UnityEvent WhenActive;
@@ -52,6 +68,16 @@ public class UAIBehaviour
         valueRangeMin = _valueRangeMin;
         valueRangeMax = _valueRangeMax;
         evaluationCooldown = _evaluationCooldown;
+    }
+
+    public void Init()
+    {
+        if(evaluator != null)
+        {
+            evaluator.Init();
+            Evaluater = (EvaluationAction)evaluator.delegateCall.GetInvocationList()[0];
+        }
+
     }
 
 
@@ -75,7 +101,7 @@ public class UAIBehaviour
         if(evaluationCooldownCount >= evaluationCooldown)
         {
             evaluationCooldownCount = 0;
-            rawValue = Evaluater.Invoke();
+            rawValue = Evaluater.Invoke(this);
 
             // Remap range between 0 - 1
             value = valueRangeMin != 0f || valueRangeMax != 1f ?

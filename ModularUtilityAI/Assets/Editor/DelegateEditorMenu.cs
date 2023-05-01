@@ -8,84 +8,82 @@ using System.Reflection;
 using UnityEditor.UIElements;
 
 //[CustomEditor(typeof(UAIBehaviour))]
-[CustomPropertyDrawer(typeof(CustomFunction))]
+[CustomPropertyDrawer(typeof(DelegateContainer<float>))]
 public class DelegateEditorMenu : PropertyDrawer
 {
-    private SerializedProperty functionDelegate;
-
-    private GameObject selectedObject;
-
-    //public override void OnInspectorGUI()
-    //{
-    //    GUILayout.Label("TEST");
-    //    //EditorGUILayout.LabelField("Cool field");
-
-    //    //GameObject mySO = null;
-    //    //mySO = (GameObject)EditorGUILayout.ObjectField("GameObject", mySO, typeof(GameObject), true);
-
-    //    //List<System.Reflection.MethodInfo> infos = new List<MethodInfo>();
-
-    //    //foreach (System.Reflection.Assembly ass in System.AppDomain.CurrentDomain.GetAssemblies())
-    //    //{
-    //    //    foreach (System.Type type in ass.GetTypes())
-    //    //    {
-    //    //        if (mySO.GetType().IsSubclassOf(type))
-    //    //        {
-    //    //            foreach (System.Reflection.MethodInfo info in type.GetMethods(BindingFlags.Instance))
-    //    //            {
-    //    //                infos.Add(info);
-    //    //            }
-    //    //        }
-    //    //    }
-    //    //}
-    //}
-
+    private SerializedProperty delegateObject;
+    private SerializedProperty delegateScript;
+    private SerializedProperty delegateMethodName;
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        if(functionDelegate == null)
+        if(delegateObject == null)
         {
-            functionDelegate = property.FindPropertyRelative("customDelegate");
+            delegateObject = property.FindPropertyRelative("delegateObject");
+        }
+        if(delegateMethodName == null)
+        {
+            delegateMethodName = property.FindPropertyRelative("delegateMethodName");
+        }
+        if(delegateScript == null)
+        {
+            delegateScript = property.FindPropertyRelative("delegateScript");
         }
 
-        return 32f;
+
+        return 42f;
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         EditorGUI.BeginProperty(position, label, property);
 
+        // Create title label
         Rect rect = new Rect(position.x, position.y, position.width, position.height/2);
-        EditorGUI.LabelField(rect, new GUIContent("Delegate"));
+        EditorGUI.LabelField(rect, new GUIContent(property.displayName + " Function"));
 
-        Rect objRect = new Rect(position.x, position.y+16f, position.width/2, position.height/2);
-        selectedObject = (GameObject)EditorGUI.ObjectField(objRect, "", selectedObject, typeof(GameObject), true);
+        // Game Object field
+        Rect objRect = new Rect(position.x, position.y+20f, position.width/2, position.height/2);
+        EditorGUI.PropertyField(objRect, delegateObject, new GUIContent(""));
+
+        GameObject selectedObject = (GameObject)delegateObject.objectReferenceValue;
 
         if(selectedObject != null)
         {
-            List<System.Reflection.MethodInfo> infos = new List<MethodInfo>();
-
-            foreach (System.Reflection.Assembly ass in System.AppDomain.CurrentDomain.GetAssemblies())
+            MonoBehaviour[] scripts = selectedObject.GetComponents<MonoBehaviour>();
+            List<MethodInfo> infos = new List<MethodInfo>();
+            // Get all methods from all scripts on selected object
+            foreach(MonoBehaviour script in scripts)
             {
-                foreach (System.Type type in ass.GetTypes())
+                foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
                 {
-                    if (selectedObject.GetType().IsSubclassOf(type))
-                    {
-                        foreach (System.Reflection.MethodInfo info in type.GetMethods(BindingFlags.Instance))
-                        {
-                            infos.Add(info);
-                        }
-                    }
+                    infos.Add(info);
                 }
             }
+
+            // Get names of methods
             string[] names = new string[infos.Count];
             for (int i = 0; i < infos.Count; i++)
             {
-                names[i] = infos[i].Name;
+                //infos[i].ReturnType
+                ParameterInfo[] parameters = infos[i].GetParameters();
+                if(infos[i].ReturnType == typeof(float) && parameters.Length == 1 && parameters[0].ParameterType == typeof(UAIBehaviour))
+                {
+                    names[i] = infos[i].DeclaringType.Name + "/" + infos[i].Name;
+                }
+
+            }
+            if(names.Length > 0)
+            {
+                // Create dropdown menu with all methodds
+                Rect methodRect = new Rect(position.x + position.width / 2, position.y + 22f, position.width / 2, position.height / 2);
+                int selectedIndex = 0;
+                selectedIndex = EditorGUI.Popup(methodRect, 0, names);
+
+                //sdelegateScript.objectReferenceValue = selectedObject.GetComponent <infos[selectedIndex].DeclaringType> ();
+                delegateMethodName.stringValue = infos[selectedIndex].Name;
             }
 
-            Rect methodRect = new Rect(position.x + position.width / 2, position.y + 16f, position.width / 2, position.height / 2);
-            EditorGUI.Popup(methodRect, 0, names);
         }
 
 
@@ -93,20 +91,5 @@ public class DelegateEditorMenu : PropertyDrawer
 
 
     }
-
-
-    //public override VisualElement CreatePropertyGUI(SerializedProperty property)
-    //{
-    //    // Create property container element.
-    //    var container = new VisualElement();
-
-    //    // Create property fields.
-    //    var del = new PropertyField(property.FindPropertyRelative("name"));
-
-    //    // Add fields to the container.
-    //    container.Add(del);
-
-    //    return container;
-    //}
 
 }

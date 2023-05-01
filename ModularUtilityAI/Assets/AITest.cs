@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class AITest : UtilityAI_AITest
 {
-    private void Start()
+    public float Test(UAIBehaviour behaviour)
     {
-        
+        Debug.Log("Test");
+        return 0f;
     }
 }

@@ -13,7 +13,7 @@ public class UtilityAI_AITest : UtilityAI
     public UAIBehaviour BJump = new UAIBehaviour(22f, 21f, 0.4f);
 
 // Start is called before the first frame update
-    protected void Awake()
+    private void Awake()
     {
         BaseAwake();
         behaviours.Add(BWalk);
@@ -23,10 +23,15 @@ public class UtilityAI_AITest : UtilityAI
         behaviours.Add(BJump);
     }
 
-    // Update is called once per frame
-    protected void Update()
+    private void Start()
     {
-        BaseUpdate();
+        BaseStart();
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        //BaseUpdate();
         Debug.Log("Walk");
         Debug.Log("Run");
         Debug.Log("Punch");

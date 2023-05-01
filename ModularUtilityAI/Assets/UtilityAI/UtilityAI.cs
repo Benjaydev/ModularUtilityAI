@@ -21,7 +21,7 @@ public class UtilityAI : MonoBehaviour
     [SerializeField]
     private Creationfield[] fields = new Creationfield[0];
 
-    protected List<UAIBehaviour> behaviours;
+    protected List<UAIBehaviour> behaviours = new List<UAIBehaviour>();
     [System.NonSerialized]
     public UAIBehaviour currentBehaviour;
 
@@ -35,12 +35,16 @@ public class UtilityAI : MonoBehaviour
     }
     protected void BaseStart()
     {
-
+        foreach(UAIBehaviour behaviour in behaviours)
+        {
+            behaviour.Init();
+        }
     }
+
     protected void BaseUpdate()
     {
         foreach(UAIBehaviour.ConditionAction condition in currentBehaviour.InterruptConditions){
-            if (condition.Invoke(currentBehaviour.GetCurrentValue(), currentBehaviour.GetCurrentRawValue()))
+            if (condition.Invoke(currentBehaviour))
             {
                 currentBehaviour.End();
                 currentBehaviour = null;
