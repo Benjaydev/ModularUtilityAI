@@ -3,10 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
+[System.Serializable]
+public class UtilityAIButton
+{ 
+
+}
+
+public interface IUtilityAIMethods
+{
+    void AIAwake();
+    void AIStart();
+    void AIUpdate();
+}
+
+[System.Serializable]
 public class UtilityAI : MonoBehaviour
 {
     [System.Serializable]
@@ -18,52 +31,81 @@ public class UtilityAI : MonoBehaviour
         public float evaluationCooldown;
     }
 
+    [Header("Instance Generator")]
+    [Tooltip("The custom behaviours to generate in the custom UtilityAI")]
+    // Custom behaviour fields
     [SerializeField]
-    private Creationfield[] fields = new Creationfield[0];
+    private Creationfield[] behavioursToGenerate = new Creationfield[0];
+    // Button used to show a button in inspector
+    [SerializeField]
+    [Tooltip("Generate a custom UtilityAI class with the custom behaviour fields.")]
+    public UtilityAIButton generateButton = new UtilityAIButton();
+
 
     protected List<UAIBehaviour> behaviours = new List<UAIBehaviour>();
     [System.NonSerialized]
     public UAIBehaviour currentBehaviour;
 
+    // The method used to choose new behaviours.
+    // Delegate that returns an index of a supplied weight. Must take float array as parameter and return int.
+    // Code only selector
+    [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
     public delegate int CustomBehaviourSelector(float[] weights);
-    public CustomBehaviourSelector behaviourSelector;
+    public CustomBehaviourSelector BehaviourSelector;
+        // Inspector exposed selector
+    [Header("Behaviour Systems")]
+    [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
+    [SerializeField]
+    private DelegateContainer<int, float[]> behaviourSelector;
 
-
-    protected void BaseAwake()
+    protected virtual void Awake()
     {
-        behaviourSelector = GetIndexOfRandomisedWeights;
+        BehaviourSelector = GetIndexOfRandomisedWeights;
+        // If inspector exposed selector is valid, replace base code only version
+        if(behaviourSelector != null)
+        {
+            BehaviourSelector = behaviourSelector.delegateCall.Invoke;
+        }
+
+        // Call child AI awake functionality
+        SendMessage("AIAwake", SendMessageOptions.DontRequireReceiver);
     }
-    protected void BaseStart()
-    {
-        foreach(UAIBehaviour behaviour in behaviours)
+
+     protected virtual void Start()
+     {
+        foreach (UAIBehaviour behaviour in behaviours)
         {
             behaviour.Init();
         }
+
+        // Call child AI start functionality
+        SendMessage("AIStart", SendMessageOptions.DontRequireReceiver);
     }
 
-    protected void BaseUpdate()
+    protected virtual void Update()
     {
-        foreach(UAIBehaviour.ConditionAction condition in currentBehaviour.InterruptConditions){
-            if (condition.Invoke(currentBehaviour))
+        // Get all evaluated values of behaviours
+        float[] weights = new float[behaviours.Count];
+        for (int i = 0; i < behaviours.Count; i++)
+        {
+            float val = behaviours[i].Evaluate();
+
+            // If another behaviour has been manually activated
+            if (behaviours[i].IsActive() && behaviours[i] != currentBehaviour)
             {
                 currentBehaviour.End();
-                currentBehaviour = null;
-                break;
+                currentBehaviour = behaviours[i];
             }
+
+            weights[i] = val;
         }
 
-        if(currentBehaviour == null)
+        // If there is no current behaviour
+        if (currentBehaviour == null || !currentBehaviour.IsActive())
         {
-            float[] weights = new float[behaviours.Count];
-            for(int i = 0; i < behaviours.Count; i++)
-            {
-                float val = behaviours[i].Evaluate();
-                weights[i] = val;
-            }
-
             // Select new behaviour
-            int chosenBehaviourIndex = behaviourSelector.Invoke(weights);
-            if(chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
+            int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
+            if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
             {
                 currentBehaviour = behaviours[chosenBehaviourIndex];
             }
@@ -71,14 +113,28 @@ public class UtilityAI : MonoBehaviour
 
 
         // Call current behaviour events
-        if(currentBehaviour.IsActive())
+        if (currentBehaviour.IsActive())
         {
             // Call the events that should happen when this behaviour is active
             currentBehaviour.WhenActive?.Invoke();
+
+            foreach (UAIBehaviour.ConditionAction condition in currentBehaviour.InterruptConditions)
+            {
+                if (condition.Invoke(currentBehaviour))
+                {
+                    currentBehaviour.End();
+                    currentBehaviour = null;
+                    break;
+                }
+            }
         }
+
+        // Call child AI updat functionality
+        SendMessage("AIUpdate", SendMessageOptions.DontRequireReceiver);
     }
 
-    int GetIndexOfRandomisedWeights(float[] weights)
+
+    public int GetIndexOfRandomisedWeights(float[] weights)
     {
         // Get total sum
         float sum = 0;
@@ -113,7 +169,7 @@ public class UtilityAI : MonoBehaviour
 
 
     [ContextMenu("Generate AI Instance")]
-    public void Build()
+    private void Build()
     {
         if(GetType().ToString() == "UtilityAI")
         {
@@ -131,14 +187,14 @@ public class UtilityAI : MonoBehaviour
         string csName = "UtilityAI_" + inheritedName;
 
         string template = BuildTemplate(csName);
-
-        bool alreadyExists = UnityEngine.Windows.Directory.Exists(path + csName + ".cs");
+        // Check whether this AI instance already exists. If it does, it only needs to be edited and no further steps are needed.
+        bool alreadyExists = UnityEngine.Windows.File.Exists(path + csName + ".cs");
         System.IO.File.WriteAllText(path + csName + ".cs", template);
 
 
         if (!alreadyExists)
         {
-            // Find the path of the script that is using the ScriptBuilder class
+            // Find the path of the script that is inheriting the ScriptBuilder class
             string[] res = System.IO.Directory.GetFiles(Application.dataPath, inheritedName + ".cs", SearchOption.AllDirectories);
             if (res.Length == 0)
             {
@@ -152,11 +208,9 @@ public class UtilityAI : MonoBehaviour
             string inheritedFileText = System.IO.File.ReadAllText(inheritedPath);
 
             Regex regex = new Regex("UtilityAI");
-            inheritedFileText = regex.Replace(inheritedFileText, csName, 1);
+            inheritedFileText = regex.Replace(inheritedFileText, csName + ", IUtilityAIMethods", 1);
 
             System.IO.File.WriteAllText(inheritedPath, inheritedFileText);
-
-
         }
 
         // Recompile scripts
@@ -178,30 +232,30 @@ public class UtilityAI : MonoBehaviour
 
 
 
-        string templateParameters = "";
+        string templateParameters = "    [Header(\"Custom Behaviours\")]\r\n";
 
         string templateAwake =
-            "\r\n// Start is called before the first frame update\r\n    " +
-            "protected void Awake()\r\n" +
+            "\r\n    // Start is called before the first frame update\r\n    " +
+            "protected override void Awake()\r\n" +
             "    {\r\n" +
-            "        BaseAwake();\r\n";
+            "        base.Awake();\r\n";
 
 
         string templateUpdate =
             "    // Update is called once per frame\r\n" +
-            "    protected void Update()\r\n" +
+            "    protected override void Update()\r\n" +
             "    {\r\n" +
-            "        BaseUpdate();\r\n";
+            "        base.Update();\r\n";
 
-        for (int i = 0; i < fields.Length; i++)
+        for (int i = 0; i < behavioursToGenerate.Length; i++)
         {
             // Add the custom parameters for each field
-            templateParameters += "    public UAIBehaviour B" + fields[i].name + " = new UAIBehaviour(" + fields[i].valueRangeMin.ToString() + "f, " + fields[i].valueRangeMax.ToString() + "f, " + fields[i].evaluationCooldown.ToString() + "f" + ");\r\n";
+            templateParameters += "    public UAIBehaviour B" + behavioursToGenerate[i].name + " = new UAIBehaviour(" + behavioursToGenerate[i].valueRangeMin.ToString() + "f, " + behavioursToGenerate[i].valueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
 
             // Add custom parameters to list for iteration use in AI
-            templateAwake += "        behaviours.Add(" + "B" + fields[i].name + ");\r\n";
+            templateAwake += "        behaviours.Add(" + "B" + behavioursToGenerate[i].name + ");\r\n";
 
-            templateUpdate += "        Debug.Log(\"" + fields[i].name + "\");\r\n";
+            //templateUpdate += "        Debug.Log(\"" + fields[i].name + "\");\r\n";
         }
 
         templateAwake += "    }\r\n\r\n";

@@ -1,41 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.Windows;
+using static UnityEngine.GraphicsBuffer;
 
 public class UtilityAI_AITest : UtilityAI
 {
-    public UAIBehaviour BWalk = new UAIBehaviour(0f, 1f, 1.23333f);
-    public UAIBehaviour BRun = new UAIBehaviour(2f, 9f, 0f);
-    public UAIBehaviour BPunch = new UAIBehaviour(324.322f, 99.02f, 0.54f);
-    public UAIBehaviour BSwim = new UAIBehaviour(0f, 0f, 0f);
-    public UAIBehaviour BJump = new UAIBehaviour(22f, 21f, 0.4f);
+    [Header("Custom Behaviours")]
+    public UAIBehaviour B_Run = new UAIBehaviour(3f, 2f, 4f);
+    public UAIBehaviour B_Fart = new UAIBehaviour(0.33f, 1.23f, 0f);
+    public UAIBehaviour B_Punch = new UAIBehaviour(0f, 3f, 3f);
 
-// Start is called before the first frame update
-    private void Awake()
+    // Start is called before the first frame update
+    protected override void Awake()
     {
-        BaseAwake();
-        behaviours.Add(BWalk);
-        behaviours.Add(BRun);
-        behaviours.Add(BPunch);
-        behaviours.Add(BSwim);
-        behaviours.Add(BJump);
-    }
-
-    private void Start()
-    {
-        BaseStart();
+        base.Awake();
+        behaviours.Add(B_Run);
+        behaviours.Add(B_Fart);
+        behaviours.Add(B_Punch);
     }
 
     // Update is called once per frame
-    private void Update()
+    protected override void Update()
     {
-        //BaseUpdate();
-        Debug.Log("Walk");
-        Debug.Log("Run");
-        Debug.Log("Punch");
-        Debug.Log("Swim");
-        Debug.Log("Jump");
+        base.Update();
+    }
+    private void OnDrawGizmos()
+    {
+        var pos = transform.position;
+
+
+        GUIStyle guiStyle = new GUIStyle();
+        guiStyle.fontSize = 20; //change the font size
+        guiStyle.normal.textColor = new Color(1, 0, 0);
+        Handles.Label(pos + new Vector3(0, 1, 0), B_Run.GetCurrentValue().ToString(), guiStyle);
+        Handles.DrawSolidRectangleWithOutline(new Rect(pos.x - 10, pos.y - 20, 20, 40), new Color(0,0,0,0.5f), Color.white);
     }
 }
