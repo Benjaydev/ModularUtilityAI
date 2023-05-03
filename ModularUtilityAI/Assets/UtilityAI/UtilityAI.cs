@@ -167,8 +167,9 @@ public class UtilityAI : MonoBehaviour
 
 
 
-
+#if UNITY_EDITOR
     [ContextMenu("Generate AI Instance")]
+    [ExecuteInEditMode]
     private void Build()
     {
         if(GetType().ToString() == "UtilityAI")
@@ -226,6 +227,7 @@ public class UtilityAI : MonoBehaviour
             "using System.Collections.Generic;\r\n" +
             "using System.Text;\r\n" +
             "using UnityEngine;\r\n" +
+            "using UnityEditor;\r\n" +
             "using UnityEngine.Windows;\r\n\r\n" +
             "public class " + csName + " : UtilityAI\r\n" +
             "{\r\n";
@@ -247,22 +249,46 @@ public class UtilityAI : MonoBehaviour
             "    {\r\n" +
             "        base.Update();\r\n";
 
+
+        string templateGizmos =
+            "#if UNITY_EDITOR\r\n" +
+            "    // Update is called once per frame\r\n" +
+            "    private void OnDrawGizmos()\r\n" +
+            "    {\r\n" +
+            "       var pos = transform.position;\r\n" +
+            "       float dist = (Camera.current.transform.position - pos).sqrMagnitude;\r\n" +
+            "       if(dist < 40000)\r\n" +
+            "       {\r\n" +
+            "           dist = Mathf.Sqrt(dist) / 10;\r\n" +
+            "           GUIStyle guiStyle = new GUIStyle();\r\n" +
+            "           guiStyle.alignment = TextAnchor.MiddleCenter;\r\n" +
+            "           guiStyle.normal.textColor = Color.red;\r\n" +
+            "           guiStyle.fontSize = (int)(20f / dist);\r\n" +
+            "           float textSeperation = 0.4f;\r\n" +
+            "           Vector2 dimensions = new Vector2(1, 0.4f*" + behavioursToGenerate.Length + ");\r\n\r\n" +
+            "           Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.name : \"None\"), guiStyle);\r\n";
+
+
         for (int i = 0; i < behavioursToGenerate.Length; i++)
         {
             // Add the custom parameters for each field
-            templateParameters += "    public UAIBehaviour B" + behavioursToGenerate[i].name + " = new UAIBehaviour(" + behavioursToGenerate[i].valueRangeMin.ToString() + "f, " + behavioursToGenerate[i].valueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
+            templateParameters += "    public UAIBehaviour B_" + behavioursToGenerate[i].name + " = new UAIBehaviour(\"" + behavioursToGenerate[i].name + "\", " + behavioursToGenerate[i].valueRangeMin.ToString() + "f, " + behavioursToGenerate[i].valueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
 
             // Add custom parameters to list for iteration use in AI
-            templateAwake += "        behaviours.Add(" + "B" + behavioursToGenerate[i].name + ");\r\n";
+            templateAwake += "        behaviours.Add(B_" + behavioursToGenerate[i].name + ");\r\n";
+
+
+            templateGizmos += "           Handles.Label(pos + new Vector3(0, dimensions.y * 2-(textSeperation*" + (i + 1) + "), 0), \"" + behavioursToGenerate[i].name + ": \" + (Mathf.Round(B_" + behavioursToGenerate[i].name + ".GetCurrentValue()*100) / 100).ToString(), guiStyle);\r\n";
 
             //templateUpdate += "        Debug.Log(\"" + fields[i].name + "\");\r\n";
         }
 
         templateAwake += "    }\r\n\r\n";
 
-        templateUpdate += "    }";
+        templateUpdate += "    }\r\n\r\n";
+        templateGizmos += "        }\r\n    }\r\n#endif";
 
-
-        return templateBeginning + templateParameters + templateAwake + templateUpdate + "\r\n}";
+        return templateBeginning + templateParameters + templateAwake + templateUpdate + templateGizmos + "\r\n}";
     }
+#endif
 }

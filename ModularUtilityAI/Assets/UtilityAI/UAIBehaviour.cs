@@ -24,6 +24,8 @@ public class UAIBehaviour
     public float valueRangeMin = 0f;
     public float valueRangeMax = 1f;
 
+    public string name = "Behaviour";
+
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods
         // Code only evaluator
@@ -50,12 +52,13 @@ public class UAIBehaviour
     public UnityEvent OnEnd;
 
 
-    public UAIBehaviour(float _valueRangeMin = 0f, float _valueRangeMax = 1f, float _evaluationCooldown = 0.5f)
+    public UAIBehaviour(string _name = "None", float _valueRangeMin = 0f, float _valueRangeMax = 1f, float _evaluationCooldown = 0.5f)
     {
         valueRangeMin = _valueRangeMin;
         valueRangeMax = _valueRangeMax;
         evaluationCooldown = _evaluationCooldown;
         evaluationCooldownCount = _evaluationCooldown;
+        name = _name;
     }
 
     private static float EmptyEvaluator(UAIBehaviour behaviour)

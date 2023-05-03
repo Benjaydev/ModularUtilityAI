@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.EventSystems;
 
 [CustomPropertyDrawer(typeof(UtilityAIButton))]
 public class UtilityAIDrawer : PropertyDrawer
@@ -18,7 +19,7 @@ public class UtilityAIDrawer : PropertyDrawer
         Rect rect = new Rect(position.x, position.y, position.width, position.height / 2);
         if(GUI.Button(rect, new GUIContent("Generate AI Instance")))
         {
-            attachedTo.SendMessage("Build");
+            attachedTo.SendMessage("Build", SendMessageOptions.DontRequireReceiver);
         };
 
         EditorGUI.EndProperty();
