@@ -172,17 +172,17 @@ MonoBehaviour:
     valueRangeMax: 0
     evaluationCooldown: 0
   behaviourSelector:
-    delegateObject: {fileID: 0}
-    delegateScript: {fileID: 0}
-    delegateMethodName: 
+    delegateObject: {fileID: 631050830}
+    delegateScript: {fileID: 631050831}
+    delegateMethodName: WeightTest
     delegateIndex: 0
     typeName: System.Int32
     paramName1: System.Single[]
   B_Run:
-    evaluationCooldown: 4
-    valueRangeMin: 3
-    valueRangeMax: 2
-    name: B_Run
+    evaluationCooldown: 0
+    valueRangeMin: 0
+    valueRangeMax: 0
+    name: Run
     evaluator:
       delegateObject: {fileID: 0}
       delegateScript: {fileID: 0}
@@ -191,9 +191,9 @@ MonoBehaviour:
       typeName: System.Single
       paramName1: UAIBehaviour
     interruptConditions:
-    - delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
+    - delegateObject: {fileID: 631050830}
+      delegateScript: {fileID: 631050831}
+      delegateMethodName: BadTest
       delegateIndex: 0
       typeName: System.Boolean
       paramName1: UAIBehaviour
@@ -207,10 +207,10 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   B_Punch:
-    evaluationCooldown: 3
+    evaluationCooldown: 0
     valueRangeMin: 0
-    valueRangeMax: 3
-    name: B_Punch
+    valueRangeMax: 0
+    name: Punch
     evaluator:
       delegateObject: {fileID: 0}
       delegateScript: {fileID: 0}

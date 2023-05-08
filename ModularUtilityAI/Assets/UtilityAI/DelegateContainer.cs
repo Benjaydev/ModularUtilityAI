@@ -28,6 +28,11 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
     [SerializeField]
     private string paramName1 = typeof(P1).FullName;
 
+    public void Set(customDelegate d)
+    {
+        delegateCall = d;
+    }
+
     public void Init()
     {
         if (delegateObject != null)
@@ -46,7 +51,10 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
         typeName = typeof(R).FullName;
         paramName1 = typeof(P1).FullName;
     }
+
 }
+
+
 
 [Serializable]
 public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializationCallbackReceiver
@@ -64,6 +72,10 @@ public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializatio
     [SerializeField]
     private string paramName2 = typeof(P2).FullName;
 
+    public void Set(customDelegate d)
+    {
+        delegateCall = d;
+    }
     public void Init()
     {
         if (delegateObject != null)

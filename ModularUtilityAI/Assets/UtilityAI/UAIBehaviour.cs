@@ -69,7 +69,6 @@ public class UAIBehaviour
 
     public void Init()
     {
-    
         // Override code only evaluator with inspector evaluator
         evaluator?.Init();
         Evaluator = evaluator.delegateCall.Invoke;

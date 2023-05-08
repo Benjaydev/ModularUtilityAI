@@ -66,7 +66,7 @@ public class DelegateContainerDrawer : PropertyDrawer
             foreach (MonoBehaviour script in selectedObject.GetComponents<MonoBehaviour>())
             {
                 // Get all methods from script
-                foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
+                foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public))
                 {
                     ParameterInfo[] parameters = info.GetParameters();
                     // Parameter count match

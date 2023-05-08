@@ -134,7 +134,12 @@ public class UtilityAI : MonoBehaviour
     }
 
 
-    public int GetIndexOfRandomisedWeights(float[] weights)
+
+    // Default weight calculation methods
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
+    public static int GetIndexOfRandomisedWeights(float[] weights)
     {
         // Get total sum
         float sum = 0;
@@ -164,6 +169,44 @@ public class UtilityAI : MonoBehaviour
 
         return weights.Length - 1;
     }
+    public static int GetIndexOfHighestWeight(float[] weights)
+    {
+        int highestIndex = 0;
+        float highestWeight = weights[0];
+        // Find the value that pushes sum above random value
+        for (int i = 1; i < weights.Length; i++)
+        {
+            if(weights[i] > highestWeight)
+            {
+                highestIndex = i;
+                highestWeight = weights[i];
+            }
+        }
+
+        return highestIndex;
+    }
+    public static int GetIndexOfLowestWeight(float[] weights)
+    {
+        int lowestIndex = 0;
+        float lowestWeight = weights[0];
+        // Find the value that pushes sum above random value
+        for (int i = 1; i < weights.Length; i++)
+        {
+            if (weights[i] < lowestWeight)
+            {
+                lowestIndex = i;
+                lowestWeight = weights[i];
+            }
+        }
+
+        return lowestIndex;
+    }
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
+
+    // Default condition methods
+
 
 
 
@@ -188,31 +231,38 @@ public class UtilityAI : MonoBehaviour
         string csName = "UtilityAI_" + inheritedName;
 
         string template = BuildTemplate(csName);
-        // Check whether this AI instance already exists. If it does, it only needs to be edited and no further steps are needed.
-        bool alreadyExists = UnityEngine.Windows.File.Exists(path + csName + ".cs");
         System.IO.File.WriteAllText(path + csName + ".cs", template);
 
-
-        if (!alreadyExists)
+        // Find the path of the script that is inheriting the ScriptBuilder class
+        string[] res = System.IO.Directory.GetFiles(Application.dataPath, inheritedName + ".cs", SearchOption.AllDirectories);
+        if (res.Length == 0)
         {
-            // Find the path of the script that is inheriting the ScriptBuilder class
-            string[] res = System.IO.Directory.GetFiles(Application.dataPath, inheritedName + ".cs", SearchOption.AllDirectories);
-            if (res.Length == 0)
+            Debug.LogError("Inherited cs file '" + inheritedName + ".cs' could not be found.");
+            return;
+        }
+        string inheritedPath = res[0];
+
+        // Replace UtilityAI class inheritence with newly created class (csName)
+        string inheritedFileText = System.IO.File.ReadAllText(inheritedPath);
+        // If the inheritence change hasn't already been completed
+        if(inheritedFileText.IndexOf(inheritedName + " : " + csName + ", IUtilityAIMethods") == -1)
+        {
+            // Find where the class definition begins
+            int ind = inheritedFileText.IndexOf(inheritedName);
+            int endInd = ind;
+            // Find where the class definition ends
+            while (inheritedFileText[endInd] != '\\' && inheritedFileText[endInd] != '{')
             {
-                Debug.LogError("Inherited cs file '" + inheritedName + ".cs' could not be found.");
-                return;
+                endInd++;
             }
-            string inheritedPath = res[0];
+            endInd--;
 
-
-            // Replace ScriptBuilder class inheritence with newly created class (csName)
-            string inheritedFileText = System.IO.File.ReadAllText(inheritedPath);
-
-            Regex regex = new Regex("UtilityAI");
-            inheritedFileText = regex.Replace(inheritedFileText, csName + ", IUtilityAIMethods", 1);
-
+            // Replace the class definition line with one that inherits from newly created UtilityAI class
+            inheritedFileText = inheritedFileText.Remove(ind, endInd - ind -1).Insert(ind, inheritedName + " : " + csName + ", IUtilityAIMethods");
             System.IO.File.WriteAllText(inheritedPath, inheritedFileText);
         }
+
+
 
         // Recompile scripts
         AssetDatabase.SaveAssets();
