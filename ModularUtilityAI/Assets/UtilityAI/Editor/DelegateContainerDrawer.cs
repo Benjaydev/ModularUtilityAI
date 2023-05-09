@@ -53,7 +53,7 @@ public class DelegateContainerDrawer : PropertyDrawer
 
         // Create title label
         Rect methodLabel = new Rect(position.x + 4 + position.width / 2, position.y, position.width, position.height / 2);
-        EditorGUI.LabelField(methodLabel, new GUIContent(delegateTypeName.stringValue.Remove(0, 7) + " (" + paramDisp + ")"));
+        EditorGUI.LabelField(methodLabel, new GUIContent(delegateTypeName.stringValue + " (" + paramDisp + ")"));
 
         if (selectedObject != null)
         {
@@ -66,7 +66,7 @@ public class DelegateContainerDrawer : PropertyDrawer
             foreach (MonoBehaviour script in selectedObject.GetComponents<MonoBehaviour>())
             {
                 // Get all methods from script
-                foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public))
+                foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static))
                 {
                     ParameterInfo[] parameters = info.GetParameters();
                     // Parameter count match

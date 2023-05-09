@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -29,6 +30,7 @@ public class UtilityAI : MonoBehaviour
         public float valueRangeMin;
         public float valueRangeMax;
         public float evaluationCooldown;
+
     }
 
     [Header("Instance Generator")]
@@ -48,25 +50,14 @@ public class UtilityAI : MonoBehaviour
 
     // The method used to choose new behaviours.
     // Delegate that returns an index of a supplied weight. Must take float array as parameter and return int.
-    // Code only selector
-    [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
-    public delegate int CustomBehaviourSelector(float[] weights);
-    public CustomBehaviourSelector BehaviourSelector;
-        // Inspector exposed selector
     [Header("Behaviour Systems")]
     [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
     [SerializeField]
-    private DelegateContainer<int, float[]> behaviourSelector;
+    private DelegateContainer<int, float[]> BehaviourSelector = new DelegateContainer<int, float[]>(GetIndexOfRandomisedWeights);
 
     protected virtual void Awake()
     {
-        BehaviourSelector = GetIndexOfRandomisedWeights;
-        // If inspector exposed selector is valid, replace base code only version
-        if(behaviourSelector != null)
-        {
-            BehaviourSelector = behaviourSelector.delegateCall.Invoke;
-        }
-
+        BehaviourSelector?.Init();
         // Call child AI awake functionality
         SendMessage("AIAwake", SendMessageOptions.DontRequireReceiver);
     }
@@ -93,8 +84,9 @@ public class UtilityAI : MonoBehaviour
             // If another behaviour has been manually activated
             if (behaviours[i].IsActive() && behaviours[i] != currentBehaviour)
             {
-                currentBehaviour.End();
+                currentBehaviour?.End();
                 currentBehaviour = behaviours[i];
+                currentBehaviour?.Start();
             }
 
             weights[i] = val;
@@ -108,6 +100,7 @@ public class UtilityAI : MonoBehaviour
             if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
             {
                 currentBehaviour = behaviours[chosenBehaviourIndex];
+                currentBehaviour.Start();
             }
         }
 
@@ -118,7 +111,8 @@ public class UtilityAI : MonoBehaviour
             // Call the events that should happen when this behaviour is active
             currentBehaviour.WhenActive?.Invoke();
 
-            foreach (UAIBehaviour.ConditionAction condition in currentBehaviour.InterruptConditions)
+            // Check all interrupt conditions
+            foreach (DelegateContainer<bool, UAIBehaviour> condition in currentBehaviour.InterruptConditions)
             {
                 if (condition.Invoke(currentBehaviour))
                 {
@@ -129,7 +123,7 @@ public class UtilityAI : MonoBehaviour
             }
         }
 
-        // Call child AI updat functionality
+        // Call child AI update functionality
         SendMessage("AIUpdate", SendMessageOptions.DontRequireReceiver);
     }
 
@@ -205,8 +199,18 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     // ----------------------------------
 
-    // Default condition methods
 
+    public static bool TimerCondition(UAIBehaviour behaviour)
+    {
+        behaviour.durationCount += Time.deltaTime;
+
+        if(behaviour.durationCount >= behaviour.timerDuration)
+        {
+            behaviour.durationCount = 0;
+            return true;
+        }
+        return false;
+    }
 
 
 
@@ -261,8 +265,6 @@ public class UtilityAI : MonoBehaviour
             inheritedFileText = inheritedFileText.Remove(ind, endInd - ind -1).Insert(ind, inheritedName + " : " + csName + ", IUtilityAIMethods");
             System.IO.File.WriteAllText(inheritedPath, inheritedFileText);
         }
-
-
 
         // Recompile scripts
         AssetDatabase.SaveAssets();

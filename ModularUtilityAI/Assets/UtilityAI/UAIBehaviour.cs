@@ -24,28 +24,24 @@ public class UAIBehaviour
     public float valueRangeMin = 0f;
     public float valueRangeMax = 1f;
 
+    [System.NonSerialized]
     public string name = "Behaviour";
 
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods
-        // Code only evaluator
-    public delegate float EvaluationAction(UAIBehaviour behaviour);
-    public EvaluationAction Evaluator = EmptyEvaluator;
-        // Inspector exposed evaluator
-    [SerializeField]
     [Tooltip("Method that calculates the wanted behaviour value. Must take UAIBEhaviour as parameter and return float.")]
-    private DelegateContainer<float, UAIBehaviour> evaluator;
+    public DelegateContainer<float, UAIBehaviour> Evaluator = new DelegateContainer<float, UAIBehaviour>(EmptyEvaluator);
 
 
+    public float timerDuration = 5f;
+    [System.NonSerialized]
+    public float durationCount = 0f;
     // Conditions that when any are met, will stop this behaviour
-        // Code only conditions
-    public delegate bool ConditionAction(UAIBehaviour behaviour);
-    public List<ConditionAction> InterruptConditions = new List<ConditionAction>();
-        // Inspector exposed conditions
-    [SerializeField]
     [Tooltip("Conditions that when any are met, this behaviour will end. Must take UAIBEhaviour as parameter and return boolean.")]
-    private DelegateContainer<bool, UAIBehaviour>[] interruptConditions = new DelegateContainer<bool, UAIBehaviour>[1];
-
+    public DelegateContainer<bool, UAIBehaviour>[] InterruptConditions = new DelegateContainer<bool, UAIBehaviour>[1]
+    {
+        new DelegateContainer<bool, UAIBehaviour>(UtilityAI.TimerCondition)
+    };
 
     public UnityEvent WhenActive;
     public UnityEvent OnStart;
@@ -70,16 +66,12 @@ public class UAIBehaviour
     public void Init()
     {
         // Override code only evaluator with inspector evaluator
-        evaluator?.Init();
-        Evaluator = evaluator.delegateCall.Invoke;
-
-        Debug.Log(evaluator.delegateCall.GetType().FullName);
+        Evaluator?.Init();
 
         // Add all inspector condition delegate calls to code only list
-        foreach (DelegateContainer<bool, UAIBehaviour> condition in interruptConditions)
+        foreach (DelegateContainer<bool, UAIBehaviour> condition in InterruptConditions)
         {
             condition?.Init();
-            InterruptConditions.Add(condition.delegateCall.Invoke);
         }
 
     }
@@ -98,19 +90,17 @@ public class UAIBehaviour
     }
     private void ValidateEvaluator()
     {
-        if (!evaluator.IsFresh())
+        if (!Evaluator.IsFresh())
         {
-            evaluator.Init();
-            Evaluator = evaluator.delegateCall.Invoke;
+            Evaluator?.Init();
         }
 
         // Add all inspector condition delegate calls to code only list
-        foreach (DelegateContainer<bool, UAIBehaviour> condition in interruptConditions)
+        foreach (DelegateContainer<bool, UAIBehaviour> condition in InterruptConditions)
         {
             if (!condition.IsFresh())
             {
                 condition?.Init();
-                InterruptConditions.Add(condition.delegateCall.Invoke);
             }
 
         }
@@ -118,7 +108,6 @@ public class UAIBehaviour
 
     public float Evaluate()
     {
-
         evaluationCooldownCount += Time.deltaTime;
         if(evaluationCooldownCount >= evaluationCooldown)
         {

@@ -157,139 +157,27 @@ MonoBehaviour:
   behavioursToGenerate:
   - name: Run
     valueRangeMin: 0
-    valueRangeMax: 0
-    evaluationCooldown: 0
-  - name: Punch
+    valueRangeMax: 1
+    evaluationCooldown: 0.3
+  - name: Drink
     valueRangeMin: 0
-    valueRangeMax: 0
-    evaluationCooldown: 0
-  - name: Walk
+    valueRangeMax: 1
+    evaluationCooldown: 0.3
+  - name: Fight
     valueRangeMin: 0
-    valueRangeMax: 0
-    evaluationCooldown: 0
+    valueRangeMax: 1
+    evaluationCooldown: 0.3
   - name: Swim
     valueRangeMin: 0
-    valueRangeMax: 0
-    evaluationCooldown: 0
-  behaviourSelector:
+    valueRangeMax: 1
+    evaluationCooldown: 0.3
+  BehaviourSelector:
     delegateObject: {fileID: 631050830}
     delegateScript: {fileID: 631050831}
-    delegateMethodName: WeightTest
+    delegateMethodName: GetIndexOfRandomisedWeights
     delegateIndex: 0
     typeName: System.Int32
     paramName1: System.Single[]
-  B_Run:
-    evaluationCooldown: 0
-    valueRangeMin: 0
-    valueRangeMax: 0
-    name: Run
-    evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    interruptConditions:
-    - delegateObject: {fileID: 631050830}
-      delegateScript: {fileID: 631050831}
-      delegateMethodName: BadTest
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  B_Punch:
-    evaluationCooldown: 0
-    valueRangeMin: 0
-    valueRangeMax: 0
-    name: Punch
-    evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    interruptConditions:
-    - delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  B_Walk:
-    evaluationCooldown: 0
-    valueRangeMin: 0
-    valueRangeMax: 0
-    name: Walk
-    evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    interruptConditions:
-    - delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  B_Swim:
-    evaluationCooldown: 0
-    valueRangeMin: 0
-    valueRangeMax: 0
-    name: Swim
-    evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    interruptConditions:
-    - delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: 
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
 --- !u!81 &631050832
 AudioListener:
   m_ObjectHideFlags: 0
@@ -348,14 +236,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 631050830}
-  m_LocalRotation: {x: -0, y: -0, z: 0.032527946, w: 0.99947083}
-  m_LocalPosition: {x: -0.000000021646727, y: 2.061, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.000000021646727, y: 2.061, z: -9.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 3.728}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &792474944
 GameObject:
   m_ObjectHideFlags: 0
