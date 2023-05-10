@@ -92,21 +92,8 @@ public class UtilityAI : MonoBehaviour
             weights[i] = val;
         }
 
-        // If there is no current behaviour
-        if (currentBehaviour == null || !currentBehaviour.IsActive())
-        {
-            // Select new behaviour
-            int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
-            if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
-            {
-                currentBehaviour = behaviours[chosenBehaviourIndex];
-                currentBehaviour.Start();
-            }
-        }
-
-
         // Call current behaviour events
-        if (currentBehaviour.IsActive())
+        if (currentBehaviour != null && currentBehaviour.IsActive())
         {
             // Call the events that should happen when this behaviour is active
             currentBehaviour.WhenActive?.Invoke();
@@ -122,6 +109,20 @@ public class UtilityAI : MonoBehaviour
                 }
             }
         }
+        // If there is no current behaviour
+        else
+        {
+            // Select new behaviour
+            int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
+            if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
+            {
+                currentBehaviour = behaviours[chosenBehaviourIndex];
+                currentBehaviour.Start();
+            }
+        }
+
+
+
 
         // Call child AI update functionality
         SendMessage("AIUpdate", SendMessageOptions.DontRequireReceiver);

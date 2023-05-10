@@ -24,8 +24,8 @@ public class UAIBehaviour
     public float valueRangeMin = 0f;
     public float valueRangeMax = 1f;
 
-    [System.NonSerialized]
-    public string name = "Behaviour";
+
+    public string dispalyName = "Behaviour";
 
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods
@@ -54,7 +54,7 @@ public class UAIBehaviour
         valueRangeMax = _valueRangeMax;
         evaluationCooldown = _evaluationCooldown;
         evaluationCooldownCount = _evaluationCooldown;
-        name = _name;
+        dispalyName = _name;
     }
 
     private static float EmptyEvaluator(UAIBehaviour behaviour)

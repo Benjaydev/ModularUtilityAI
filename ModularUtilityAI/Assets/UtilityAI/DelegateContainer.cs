@@ -52,9 +52,7 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
             try { 
                 delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), delegateScript, delegateMethodName); 
             }
-            catch(Exception e) { 
-                //delegateCall = null; 
-            }
+            catch { }
         }
     }
 
