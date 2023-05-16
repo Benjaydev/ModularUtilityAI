@@ -10,9 +10,19 @@ public class DelegateContainerBase
     [SerializeField]
     protected MonoBehaviour delegateScript;
     [SerializeField]
-    protected string delegateMethodName;
+    protected string delegateMethodName = "None";
     [SerializeField]
     protected int delegateIndex;
+
+    public void Construct(MonoBehaviour script)
+    {
+        delegateScript = script;
+        delegateObject = delegateScript.gameObject;
+    }
+    public bool IsConstructed()
+    {
+        return delegateScript != null && delegateObject != null;
+    }
 
 }
 
@@ -29,15 +39,21 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
     [SerializeField]
     private string paramName1 = typeof(P1).FullName;
 
+    public DelegateContainer()
+    {
+    }
     public DelegateContainer(customDelegate del)
     {
-        Set(del);
+        delegateCall = del;
+        delegateMethodName = del.Method.Name;
     }
 
-    public void Set(customDelegate d)
+    public void Set(customDelegate d, object script)
     {
         delegateCall = d;
         delegateMethodName = d.Method.Name;
+        delegateScript = (MonoBehaviour)script;
+        delegateObject = delegateScript.gameObject;
     }
 
     public R Invoke(P1 param)
@@ -45,14 +61,27 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
         return delegateCall != null ? delegateCall.Invoke(param) : default(R);
     }
 
+    public bool IsValid()
+    {
+        return delegateCall != null;
+    }
+
     public void Init()
     {
         if (delegateObject != null)
         {
-            try { 
-                delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), delegateScript, delegateMethodName); 
+            Type parentType = delegateScript.GetType();
+            while (delegateCall == null && parentType != typeof(MonoBehaviour))
+            {     
+                try
+                {
+                    delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), Convert.ChangeType(delegateScript, parentType), delegateMethodName);
+                    break;
+                }
+                catch{}
+                parentType = parentType.BaseType;
             }
-            catch { }
+
         }
     }
 
@@ -86,19 +115,33 @@ public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializatio
     [SerializeField]
     private string paramName2 = typeof(P2).FullName;
 
+    public DelegateContainer()
+    {
+    }
     public DelegateContainer(customDelegate del)
     {
-        Set(del);
+        delegateCall = del;
+        delegateMethodName = del.Method.Name;
     }
 
-    public void Set(customDelegate d)
+
+    public void Set(customDelegate d, object script)
     {
         delegateCall = d;
+        delegateMethodName = d.Method.Name;
+        delegateScript = (MonoBehaviour)script;
+        delegateObject = delegateScript.gameObject;
     }
     public R Invoke(P1 param1, P2 param2)
     {
         return delegateCall != null ? delegateCall.Invoke(param1, param2) : default(R);
     }
+
+    public bool IsValid()
+    {
+        return delegateCall != null;
+    }
+
 
     public void Init()
     {

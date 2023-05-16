@@ -52,8 +52,7 @@ public class UtilityAI : MonoBehaviour
     // Delegate that returns an index of a supplied weight. Must take float array as parameter and return int.
     [Header("Behaviour Systems")]
     [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
-    [SerializeField]
-    private DelegateContainer<int, float[]> BehaviourSelector = new DelegateContainer<int, float[]>(GetIndexOfRandomisedWeights);
+    public DelegateContainer<int, float[]> BehaviourSelector = new DelegateContainer<int, float[]>(GetIndexOfRandomisedWeights);
 
     protected virtual void Awake()
     {
@@ -109,13 +108,15 @@ public class UtilityAI : MonoBehaviour
                 }
             }
         }
-        // If there is no current behaviour
-        else
+
+        // If there is no current behaviour or behaviour has no conditions
+        if (currentBehaviour == null || !currentBehaviour.IsActive() || currentBehaviour.InterruptConditions.Count == 0)
         {
             // Select new behaviour
             int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
             if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
             {
+                currentBehaviour?.End();
                 currentBehaviour = behaviours[chosenBehaviourIndex];
                 currentBehaviour.Start();
             }
@@ -162,7 +163,7 @@ public class UtilityAI : MonoBehaviour
             }
         }
 
-        return weights.Length - 1;
+        return Random.Range(0, weights.Length+1);
     }
     public static int GetIndexOfHighestWeight(float[] weights)
     {
@@ -200,22 +201,47 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     // ----------------------------------
 
-
+    // Default condition methods
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
     public static bool TimerCondition(UAIBehaviour behaviour)
     {
-        behaviour.durationCount += Time.deltaTime;
 
-        if(behaviour.durationCount >= behaviour.timerDuration)
+        behaviour.durationCount += Time.deltaTime;
+        Debug.Log(behaviour.displayName + ": " + behaviour.durationCount);
+        if (behaviour.durationCount >= behaviour.timerDuration)
         {
-            behaviour.durationCount = 0;
             return true;
         }
         return false;
     }
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
 
-
+    // Default evaluation methods
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
+    public static float EvaluateToOne(UAIBehaviour behaviour)
+    {
+        return 1f;
+    }
+    public static float EvaluateToMin(UAIBehaviour behaviour)
+    {
+        return behaviour.valueRangeMin;
+    }
+    public static float EvaluateToMax(UAIBehaviour behaviour)
+    {
+        return behaviour.valueRangeMax;
+    }
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
 
 #if UNITY_EDITOR
+
     [ContextMenu("Generate AI Instance")]
     [ExecuteInEditMode]
     private void Build()
@@ -319,7 +345,7 @@ public class UtilityAI : MonoBehaviour
             "           guiStyle.fontSize = (int)(20f / dist);\r\n" +
             "           float textSeperation = 0.4f;\r\n" +
             "           Vector2 dimensions = new Vector2(1, 0.4f*" + behavioursToGenerate.Length + ");\r\n\r\n" +
-            "           Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.name : \"None\"), guiStyle);\r\n";
+            "           Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.displayName : \"None\"), guiStyle);\r\n";
 
 
         for (int i = 0; i < behavioursToGenerate.Length; i++)
@@ -343,5 +369,6 @@ public class UtilityAI : MonoBehaviour
 
         return templateBeginning + templateParameters + templateAwake + templateUpdate + templateGizmos + "\r\n}";
     }
+
 #endif
 }

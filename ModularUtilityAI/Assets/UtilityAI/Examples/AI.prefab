@@ -119,40 +119,29 @@ MonoBehaviour:
     delegateIndex: 0
     typeName: System.Int32
     paramName1: System.Single[]
-  B_Run:
-    evaluationCooldown: 0.3
+  B_See:
+    evaluationCooldown: 0
     valueRangeMin: 0
-    valueRangeMax: 8
+    valueRangeMax: 0
+    displayName: See
     Evaluator:
-      delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: RunEvaluator
+      delegateObject: {fileID: 0}
+      delegateScript: {fileID: 0}
+      delegateMethodName: None
       delegateIndex: 0
       typeName: System.Single
       paramName1: UAIBehaviour
     timerDuration: 5
     InterruptConditions:
-    - delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: ShouldRun
+    - delegateObject: {fileID: 0}
+      delegateScript: {fileID: 0}
+      delegateMethodName: TimerCondition
       delegateIndex: 0
       typeName: System.Boolean
       paramName1: UAIBehaviour
     WhenActive:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 4468926206683166758}
-          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
-          m_MethodName: RunActive
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
     OnStart:
       m_PersistentCalls:
         m_Calls: []
@@ -163,6 +152,7 @@ MonoBehaviour:
     evaluationCooldown: 0.3
     valueRangeMin: 0
     valueRangeMax: 1
+    displayName: Drink
     Evaluator:
       delegateObject: {fileID: 0}
       delegateScript: {fileID: 0}
@@ -174,7 +164,7 @@ MonoBehaviour:
     InterruptConditions:
     - delegateObject: {fileID: 4020842263875501658}
       delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: ShouldRun
+      delegateMethodName: TooHungry
       delegateIndex: 0
       typeName: System.Boolean
       paramName1: UAIBehaviour
@@ -191,6 +181,7 @@ MonoBehaviour:
     evaluationCooldown: 0.3
     valueRangeMin: 0
     valueRangeMax: 1
+    displayName: Eat
     Evaluator:
       delegateObject: {fileID: 0}
       delegateScript: {fileID: 0}
@@ -202,7 +193,7 @@ MonoBehaviour:
     InterruptConditions:
     - delegateObject: {fileID: 4020842263875501658}
       delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: ShouldRun
+      delegateMethodName: TooHungry
       delegateIndex: 0
       typeName: System.Boolean
       paramName1: UAIBehaviour
@@ -219,18 +210,19 @@ MonoBehaviour:
     evaluationCooldown: 0.3
     valueRangeMin: 0
     valueRangeMax: 1
+    displayName: Talk
     Evaluator:
       delegateObject: {fileID: 4020842263875501658}
       delegateScript: {fileID: 4468926206683166758}
       delegateMethodName: TalkEvaluator
-      delegateIndex: 1
+      delegateIndex: 3
       typeName: System.Single
       paramName1: UAIBehaviour
     timerDuration: 5
     InterruptConditions:
     - delegateObject: {fileID: 4020842263875501658}
       delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: ShouldRun
+      delegateMethodName: TooHungry
       delegateIndex: 0
       typeName: System.Boolean
       paramName1: UAIBehaviour

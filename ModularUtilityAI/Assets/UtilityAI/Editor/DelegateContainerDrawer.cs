@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
+using Unity.VisualScripting;
 
 [CustomPropertyDrawer(typeof(DelegateContainer<,>))]
 public class DelegateContainerDrawer : PropertyDrawer
@@ -14,6 +15,9 @@ public class DelegateContainerDrawer : PropertyDrawer
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         SerializedProperty delegateObject = property.FindPropertyRelative("delegateObject");
+        SerializedProperty delegateIndex = property.FindPropertyRelative("delegateIndex");
+        SerializedProperty delegateMethodName = property.FindPropertyRelative("delegateMethodName");
+        SerializedProperty delegateScript = property.FindPropertyRelative("delegateScript");
 
         EditorGUI.BeginProperty(position, label, property);
 
@@ -96,28 +100,33 @@ public class DelegateContainerDrawer : PropertyDrawer
                 }
             }
 
+
+
             // Get names of methods
             string[] names = new string[infos.Count];
             for (int i = 0; i < infos.Count; i++)
             {
                 names[i] = (infos[i].DeclaringType.Name + "/" + infos[i].Name);
+                if (infos[i].Name == delegateMethodName.stringValue && delegateScript.objectReferenceValue == infosScripts[i])
+                {
+                    delegateIndex.intValue = i;
+                    delegateObject.objectReferenceValue = ((MonoBehaviour)delegateScript.objectReferenceValue).gameObject;
+                }
             }
 
             // If there are any valid methods avaliable
             if (names.Length > 0)
             {
-                SerializedProperty delegateIndex = property.FindPropertyRelative("delegateIndex");
-
                 // Create dropdown menu with all methods
                 Rect methodRect = new Rect(position.x + (position.width / 2) + 4, position.y + 22f, (position.width / 2) - 4, position.height / 2);
                 delegateIndex.intValue = EditorGUI.Popup(methodRect, delegateIndex.intValue, names);
 
                 // Save reference to script
-                SerializedProperty delegateScript = property.FindPropertyRelative("delegateScript");
+
                 delegateScript.objectReferenceValue = infosScripts[delegateIndex.intValue];
 
                 // Save method name
-                SerializedProperty delegateMethodName = property.FindPropertyRelative("delegateMethodName");
+
                 delegateMethodName.stringValue = infos[delegateIndex.intValue].Name;
             }
             // No methods avaliable
@@ -126,7 +135,8 @@ public class DelegateContainerDrawer : PropertyDrawer
                 // Create empty dropdown menu
                 Rect methodRect = new Rect(position.x + (position.width / 2) + 4, position.y + 20f, (position.width / 2) - 4, position.height / 2);
                 GUI.enabled = false;
-                EditorGUI.Popup(methodRect, 0, new string[1] {"None Avaliable"});
+                EditorGUI.Popup(methodRect, 0, new string[1] { "None" });
+
                 GUI.enabled = true;
 
             }
@@ -139,7 +149,7 @@ public class DelegateContainerDrawer : PropertyDrawer
             // Create empty dropdown Menu
             Rect methodRect = new Rect(position.x + (position.width / 2) + 4, position.y + 20f, (position.width / 2) - 4, position.height / 2);
             GUI.enabled = false;
-            EditorGUI.Popup(methodRect, 0, new string[1] { "None Avaliable" });
+            EditorGUI.Popup(methodRect, 0, new string[1] { delegateMethodName.stringValue == "None" ? "None" : delegateMethodName.stringValue + " (Default)" });
             GUI.enabled = true;
         }
 

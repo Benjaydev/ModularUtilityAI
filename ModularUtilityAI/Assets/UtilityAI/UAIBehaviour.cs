@@ -25,12 +25,12 @@ public class UAIBehaviour
     public float valueRangeMax = 1f;
 
 
-    public string dispalyName = "Behaviour";
+    public string displayName = "Behaviour";
 
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods
     [Tooltip("Method that calculates the wanted behaviour value. Must take UAIBEhaviour as parameter and return float.")]
-    public DelegateContainer<float, UAIBehaviour> Evaluator = new DelegateContainer<float, UAIBehaviour>(EmptyEvaluator);
+    public DelegateContainer<float, UAIBehaviour> Evaluator = new DelegateContainer<float, UAIBehaviour>();
 
 
     public float timerDuration = 5f;
@@ -38,7 +38,7 @@ public class UAIBehaviour
     public float durationCount = 0f;
     // Conditions that when any are met, will stop this behaviour
     [Tooltip("Conditions that when any are met, this behaviour will end. Must take UAIBEhaviour as parameter and return boolean.")]
-    public DelegateContainer<bool, UAIBehaviour>[] InterruptConditions = new DelegateContainer<bool, UAIBehaviour>[1]
+    public List<DelegateContainer<bool, UAIBehaviour>> InterruptConditions = new List<DelegateContainer<bool, UAIBehaviour>>()
     {
         new DelegateContainer<bool, UAIBehaviour>(UtilityAI.TimerCondition)
     };
@@ -54,12 +54,7 @@ public class UAIBehaviour
         valueRangeMax = _valueRangeMax;
         evaluationCooldown = _evaluationCooldown;
         evaluationCooldownCount = _evaluationCooldown;
-        dispalyName = _name;
-    }
-
-    private static float EmptyEvaluator(UAIBehaviour behaviour)
-    {
-        return behaviour.value;
+        displayName = _name;
     }
 
 
@@ -80,12 +75,14 @@ public class UAIBehaviour
     public void End()
     {
         isActive = false;
+        durationCount = 0f;
         OnEnd.Invoke();
     }
 
     public void Start()
     {
         isActive = true;
+        durationCount = 0f;
         OnStart.Invoke();
     }
     private void ValidateEvaluator()
@@ -112,16 +109,20 @@ public class UAIBehaviour
         if(evaluationCooldownCount >= evaluationCooldown)
         {
             evaluationCooldownCount = 0;
-            ValidateEvaluator();
-            rawValue = Evaluator.Invoke(this);
-
-            // Remap range between 0 - 1
-            value = valueRangeMin != 0f || valueRangeMax != 1f ?
-                0f + (rawValue - valueRangeMin) * (1 - 0f) / (valueRangeMax - valueRangeMin) :
-                rawValue;
-
+            rawValue = valueRangeMin;
+            value = 0f;
+            if (Evaluator.IsValid())
+            {
+                ValidateEvaluator();
+                rawValue = Evaluator.Invoke(this);
+                // Remap range between 0 - 1
+                value = valueRangeMin != 0f || valueRangeMax != 1f ?
+                    0f + (rawValue - valueRangeMin) * (1 - 0f) / (valueRangeMax - valueRangeMin) :
+                    rawValue;
+            }
         }
 
         return value;
     }
+
 }
