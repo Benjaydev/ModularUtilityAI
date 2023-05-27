@@ -6,6 +6,11 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     [SerializeField]
     private NavMeshAgent agent;
 
+    [SerializeField]
+    private BoxCollider walkArea;
+
+    [SerializeField]
+    private GameObject[] waterSources;
 
     private float thirst = 0;
     private float hunger = 0;
@@ -21,15 +26,9 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
 
     public void AIUpdate()
     {
-        thirst = Mathf.Min(10, thirst + Random.Range(0f, 2f) * Time.deltaTime);
+        thirst = Mathf.Min(10, thirst + 0.5f * Time.deltaTime);
     }
 
-
-    public float RunEvaluator(UAIBehaviour behaviour)
-    {
-
-        return Mathf.Max(10 - (transform.position - Player.instance.marker.transform.position).magnitude, 0); 
-    }
 
     public float HungerEvaluator(UAIBehaviour behaviour)
     {
@@ -59,7 +58,36 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     }
     public void DrinkActive()
     {
-        thirst = Mathf.Max(0, thirst - Time.deltaTime*2);
+        if ((agent.destination - transform.position).sqrMagnitude < 3 * 3)
+        {
+            thirst = Mathf.Max(0, thirst - Time.deltaTime * 3);
+        }
+
+    }
+    public void DrinkStart()
+    {
+        agent.SetDestination(waterSources[Random.Range(0, waterSources.Length)].transform.position);
+    }
+
+    public void WanderActive()
+    {
+        if(agent.isStopped || (agent.destination-transform.position).sqrMagnitude < 3*3)
+        {
+            agent.SetDestination(RandomPointInBounds(walkArea.bounds));
+        }
+    }
+    public void WanderStart()
+    {
+        agent.SetDestination(RandomPointInBounds(walkArea.bounds));
+    }
+
+    public Vector3 RandomPointInBounds(Bounds bounds)
+    {
+        return new Vector3(
+            Random.Range(bounds.min.x, bounds.max.x),
+            Random.Range(bounds.min.y, bounds.max.y),
+            Random.Range(bounds.min.z, bounds.max.z)
+        );
     }
 
     public float TalkEvaluator(UAIBehaviour behaviour)

@@ -71,7 +71,7 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
         if (delegateObject != null)
         {
             Type parentType = delegateScript.GetType();
-            while (delegateCall == null && parentType != typeof(MonoBehaviour))
+            while (parentType != typeof(MonoBehaviour))
             {     
                 try
                 {
