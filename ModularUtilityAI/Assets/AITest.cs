@@ -12,6 +12,8 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     [SerializeField]
     private GameObject[] waterSources;
 
+
+
     private float thirst = 0;
     private float hunger = 0;
 
@@ -27,6 +29,9 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     public void AIUpdate()
     {
         thirst = Mathf.Min(10, thirst + 0.5f * Time.deltaTime);
+
+
+
     }
 
 
@@ -66,7 +71,18 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     }
     public void DrinkStart()
     {
-        agent.SetDestination(waterSources[Random.Range(0, waterSources.Length)].transform.position);
+        Transform closest = null;
+        float closestDist = float.MaxValue;
+        for(int i = 0; i < waterSources.Length; i++)
+        {
+            float dist = (waterSources[i].transform.position - transform.position).sqrMagnitude;
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = waterSources[i].transform;
+            }
+        }
+        agent.SetDestination(closest.position);
     }
 
     public void WanderActive()
