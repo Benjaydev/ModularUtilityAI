@@ -11,6 +11,10 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
 
     [SerializeField]
     private GameObject[] waterSources;
+    [SerializeField]
+    private GameObject[] beds;
+    [SerializeField]
+    private GameObject[] foodSources;
 
 
 
@@ -28,8 +32,11 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
 
     public void AIUpdate()
     {
-        thirst = Mathf.Min(10, thirst + 0.5f * Time.deltaTime);
-
+        // Increase thirst
+        if (!B_Drink.IsActive())
+        {
+            thirst = Mathf.Min(10, thirst + 0.05f * Time.deltaTime);
+        }
 
 
     }
@@ -57,44 +64,55 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     }
 
 
-    public void EatActive()
-    {
-        hunger = Mathf.Max(0, hunger-Time.deltaTime);
-    }
     public void DrinkActive()
     {
-        if ((agent.destination - transform.position).sqrMagnitude < 3 * 3)
+        if (IsAtDestination(3))
         {
-            thirst = Mathf.Max(0, thirst - Time.deltaTime * 3);
+            thirst = Mathf.Max(0, thirst - (Time.deltaTime/5));
         }
 
     }
     public void DrinkStart()
-    {
-        Transform closest = null;
-        float closestDist = float.MaxValue;
-        for(int i = 0; i < waterSources.Length; i++)
-        {
-            float dist = (waterSources[i].transform.position - transform.position).sqrMagnitude;
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                closest = waterSources[i].transform;
-            }
-        }
-        agent.SetDestination(closest.position);
+    { 
+        agent.SetDestination(FindClosest(waterSources).position);
     }
 
+    public void WanderStart()
+    {
+        agent.SetDestination(RandomPointInBounds(walkArea.bounds));
+    }
     public void WanderActive()
     {
-        if(agent.isStopped || (agent.destination-transform.position).sqrMagnitude < 3*3)
+        if(agent.isStopped || IsAtDestination(3))
         {
             agent.SetDestination(RandomPointInBounds(walkArea.bounds));
         }
     }
-    public void WanderStart()
+
+
+    public void EatStart()
     {
-        agent.SetDestination(RandomPointInBounds(walkArea.bounds));
+        agent.SetDestination(FindClosest(foodSources).position);
+    }
+    public void EatActive()
+    {
+        if (IsAtDestination(3))
+        {
+            hunger = Mathf.Max(0, hunger - (Time.deltaTime/10));
+        }
+    }
+
+    public void SleepStart()
+    {
+        agent.SetDestination(FindClosest(beds).position);
+    }
+    public void SleepActive()
+    {
+        if (IsAtDestination(3))
+        {
+
+        }
+
     }
 
     public Vector3 RandomPointInBounds(Bounds bounds)
@@ -126,5 +144,29 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     {
         return 0;
     }
+
+
+    public Transform FindClosest(GameObject[] gos)
+    {
+        Transform closest = null;
+        float closestDist = float.MaxValue;
+        for (int i = 0; i < gos.Length; i++)
+        {
+            float dist = (gos[i].transform.position - transform.position).sqrMagnitude;
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closest = gos[i].transform;
+            }
+        }
+        return closest;
+    }
+
+    public bool IsAtDestination(float dist)
+    {
+        return (agent.destination - transform.position).sqrMagnitude < dist * dist;
+    }
+
+
 
 }

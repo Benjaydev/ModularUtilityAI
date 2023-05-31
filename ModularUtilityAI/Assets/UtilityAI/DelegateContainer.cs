@@ -3,8 +3,10 @@ using System.Reflection;
 using UnityEngine;
 
 [Serializable]
-public class DelegateContainerBase
+public abstract class DelegateContainerBase
 {
+    public MethodInfo method;
+
     [SerializeField]
     protected GameObject delegateObject;
     [SerializeField]
@@ -24,6 +26,22 @@ public class DelegateContainerBase
         return delegateScript != null && delegateObject != null;
     }
 
+
+    public void Init()
+    {
+        if (delegateObject != null)
+        {
+            try
+            {
+                method = delegateScript.GetType().GetMethod(delegateMethodName, BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            }
+            catch (Exception e) { Debug.LogWarning(e); }
+        }
+    }
+
+    public bool IsFresh(){ return method == null || method.Name == delegateMethodName; /* Return whether the current method is the same as the selected method */ }
+    public bool IsValid() { return method != null; }
+
 }
 
 [Serializable]
@@ -31,61 +49,31 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
 {
     public delegate R customDelegate(P1 param);
 
-    public customDelegate delegateCall;
-
     [SerializeField]
     private string typeName = typeof(R).FullName;
 
     [SerializeField]
     private string paramName1 = typeof(P1).FullName;
 
-    public DelegateContainer()
+    public DelegateContainer(){}
+    public DelegateContainer(customDelegate m)
     {
-    }
-    public DelegateContainer(customDelegate del)
-    {
-        delegateCall = del;
-        delegateMethodName = del.Method.Name;
-    }
-
-    public void Set(customDelegate d, object script)
-    {
-        delegateCall = d;
-        delegateMethodName = d.Method.Name;
-        delegateScript = (MonoBehaviour)script;
-        delegateObject = delegateScript.gameObject;
+        method = m.Method;
+        delegateMethodName = method.Name;
     }
 
     public R Invoke(P1 param)
     {
-        return delegateCall != null ? delegateCall.Invoke(param) : default(R);
+        return method == null ? default(R) : (R)method.Invoke(delegateScript, new object[] { param });
     }
 
-    public bool IsValid()
+    public void Set(customDelegate m, object script)
     {
-        return delegateCall != null;
+        method = m.Method;
+        delegateMethodName = method.Name;
+        delegateScript = (MonoBehaviour)script;
+        delegateObject = delegateScript.gameObject;
     }
-
-    public void Init()
-    {
-        if (delegateObject != null)
-        {
-            Type parentType = delegateScript.GetType();
-            while (parentType != typeof(MonoBehaviour))
-            {     
-                try
-                {
-                    delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), Convert.ChangeType(delegateScript, parentType), delegateMethodName);
-                    break;
-                }
-                catch{}
-                parentType = parentType.BaseType;
-            }
-
-        }
-    }
-
-    public bool IsFresh() { return delegateCall == null || delegateCall.GetInvocationList()[0].GetMethodInfo().Name == delegateMethodName; /* Return whether the current delegate method is the same as the selected method */ }
 
     public void OnBeforeSerialize(){}
 
@@ -98,13 +86,10 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
 }
 
 
-
 [Serializable]
 public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializationCallbackReceiver
 {
-    public delegate R customDelegate(P1 param1, P2 param2);
-
-    public customDelegate delegateCall;
+    public delegate R customDelegate(P1 param);
 
     [SerializeField]
     private string typeName = typeof(R).FullName;
@@ -118,41 +103,23 @@ public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializatio
     public DelegateContainer()
     {
     }
-    public DelegateContainer(customDelegate del)
+    public DelegateContainer(customDelegate m)
     {
-        delegateCall = del;
-        delegateMethodName = del.Method.Name;
+        method = m.Method;
+        delegateMethodName = method.Name;
     }
 
-
-    public void Set(customDelegate d, object script)
+    public R Invoke(P1 param1, P2 param2)
     {
-        delegateCall = d;
-        delegateMethodName = d.Method.Name;
+        return method == null ? default(R) : (R)method.Invoke(delegateScript, new object[] { param1, param2 });
+    }
+    public void Set(customDelegate m, object script)
+    {
+        method = m.Method;
+        delegateMethodName = method.Name;
         delegateScript = (MonoBehaviour)script;
         delegateObject = delegateScript.gameObject;
     }
-    public R Invoke(P1 param1, P2 param2)
-    {
-        return delegateCall != null ? delegateCall.Invoke(param1, param2) : default(R);
-    }
-
-    public bool IsValid()
-    {
-        return delegateCall != null;
-    }
-
-
-    public void Init()
-    {
-        if (delegateObject != null)
-        {
-            try { delegateCall = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), delegateScript, delegateMethodName); }
-            catch { delegateCall = null; }
-        }
-    }
-
-    public bool IsFresh() { return delegateCall == null || delegateCall.GetInvocationList()[0].GetMethodInfo().Name == delegateMethodName; /* Return whether the current delegate method is the same as the selected method */ }
 
     public void OnBeforeSerialize() { }
 

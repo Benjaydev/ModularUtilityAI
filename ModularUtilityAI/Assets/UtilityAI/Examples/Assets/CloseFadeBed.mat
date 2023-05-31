@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CloseFadeWallTop
+  m_Name: CloseFadeBed
   m_Shader: {fileID: 4800000, guid: a8ddb23b75ac91140a233bcc27023bee, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -21,17 +21,17 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a3dd936d8953ee9499184bee1b0250fc, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _FadeDistance: 11
     - _FadeSpeed: 10
-    - _Glossiness: 0.5
+    - _Glossiness: 0.538
     - _Metallic: 0
     - _TestMode: 0
     - _UVs: 3.8
     m_Colors:
-    - _Color: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
+    - _Color: {r: 0.6839622, g: 1, b: 0.95484364, a: 1}
   m_BuildTextureStacks: []

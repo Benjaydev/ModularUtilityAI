@@ -111,19 +111,209 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 032a6818d2d713a448b695ff3c2eef6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  behavioursToGenerate: []
+  behavioursToGenerate:
+  - name: Wander
+    valueRangeMin: 0
+    valueRangeMax: 0
+    evaluationCooldown: 0
+  - name: Drink
+    valueRangeMin: 0
+    valueRangeMax: 0
+    evaluationCooldown: 0
+  - name: Eat
+    valueRangeMin: 0
+    valueRangeMax: 0
+    evaluationCooldown: 0
+  - name: Talk
+    valueRangeMin: 0
+    valueRangeMax: 0
+    evaluationCooldown: 0
+  - name: Sleep
+    valueRangeMin: 0
+    valueRangeMax: 0
+    evaluationCooldown: 0
   BehaviourSelector:
-    delegateObject: {fileID: 0}
-    delegateScript: {fileID: 0}
-    delegateMethodName: GetIndexOfRandomisedWeights
-    delegateIndex: 0
+    delegateObject: {fileID: 4020842263875501658}
+    delegateScript: {fileID: 4468926206683166758}
+    delegateMethodName: GetIndexOfHighestWeight
+    delegateIndex: 2
     typeName: System.Int32
     paramName1: System.Single[]
-  B_See:
+  B_Wander:
+    evaluationCooldown: 0
+    valueRangeMin: 0
+    valueRangeMax: 1
+    displayName: Wander
+    Evaluator:
+      delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: WanderEvaluator
+      delegateIndex: 2
+      typeName: System.Single
+      paramName1: UAIBehaviour
+    timerDuration: 5
+    InterruptConditions:
+    - delegateObject: {fileID: 0}
+      delegateScript: {fileID: 0}
+      delegateMethodName: TimerCondition
+      delegateIndex: 0
+      typeName: System.Boolean
+      paramName1: UAIBehaviour
+    WhenActive:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4468926206683166758}
+          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
+          m_MethodName: WanderActive
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    OnStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4468926206683166758}
+          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
+          m_MethodName: WanderStart
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    OnEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  B_Drink:
+    evaluationCooldown: 0.3
+    valueRangeMin: 0
+    valueRangeMax: 10
+    displayName: Drink
+    Evaluator:
+      delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: ThirstEvaluator
+      delegateIndex: 1
+      typeName: System.Single
+      paramName1: UAIBehaviour
+    timerDuration: 5
+    InterruptConditions:
+    - delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: NotThirsty
+      delegateIndex: 1
+      typeName: System.Boolean
+      paramName1: UAIBehaviour
+    WhenActive:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4468926206683166758}
+          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
+          m_MethodName: DrinkActive
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    OnStart:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4468926206683166758}
+          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
+          m_MethodName: DrinkStart
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    OnEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  B_Eat:
+    evaluationCooldown: 0.3
+    valueRangeMin: 0
+    valueRangeMax: 10
+    displayName: Eat
+    Evaluator:
+      delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: HungerEvaluator
+      delegateIndex: 0
+      typeName: System.Single
+      paramName1: UAIBehaviour
+    timerDuration: 5
+    InterruptConditions:
+    - delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: TimerCondition
+      delegateIndex: 2
+      typeName: System.Boolean
+      paramName1: UAIBehaviour
+    WhenActive:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4468926206683166758}
+          m_TargetAssemblyTypeName: AITest, Assembly-CSharp
+          m_MethodName: EatActive
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    OnStart:
+      m_PersistentCalls:
+        m_Calls: []
+    OnEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  B_Talk:
+    evaluationCooldown: 0.3
+    valueRangeMin: 0
+    valueRangeMax: 1
+    displayName: Talk
+    Evaluator:
+      delegateObject: {fileID: 4020842263875501658}
+      delegateScript: {fileID: 4468926206683166758}
+      delegateMethodName: TalkEvaluator
+      delegateIndex: 3
+      typeName: System.Single
+      paramName1: UAIBehaviour
+    timerDuration: 5
+    InterruptConditions: []
+    WhenActive:
+      m_PersistentCalls:
+        m_Calls: []
+    OnStart:
+      m_PersistentCalls:
+        m_Calls: []
+    OnEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  B_Sleep:
     evaluationCooldown: 0
     valueRangeMin: 0
     valueRangeMax: 0
-    displayName: See
+    displayName: Sleep
     Evaluator:
       delegateObject: {fileID: 0}
       delegateScript: {fileID: 0}
@@ -148,94 +338,12 @@ MonoBehaviour:
     OnEnd:
       m_PersistentCalls:
         m_Calls: []
-  B_Drink:
-    evaluationCooldown: 0.3
-    valueRangeMin: 0
-    valueRangeMax: 1
-    displayName: Drink
-    Evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: EmptyEvaluator
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    timerDuration: 5
-    InterruptConditions:
-    - delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: TooHungry
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  B_Eat:
-    evaluationCooldown: 0.3
-    valueRangeMin: 0
-    valueRangeMax: 1
-    displayName: Eat
-    Evaluator:
-      delegateObject: {fileID: 0}
-      delegateScript: {fileID: 0}
-      delegateMethodName: EmptyEvaluator
-      delegateIndex: 0
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    timerDuration: 5
-    InterruptConditions:
-    - delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: TooHungry
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  B_Talk:
-    evaluationCooldown: 0.3
-    valueRangeMin: 0
-    valueRangeMax: 1
-    displayName: Talk
-    Evaluator:
-      delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: TalkEvaluator
-      delegateIndex: 3
-      typeName: System.Single
-      paramName1: UAIBehaviour
-    timerDuration: 5
-    InterruptConditions:
-    - delegateObject: {fileID: 4020842263875501658}
-      delegateScript: {fileID: 4468926206683166758}
-      delegateMethodName: TooHungry
-      delegateIndex: 0
-      typeName: System.Boolean
-      paramName1: UAIBehaviour
-    WhenActive:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStart:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEnd:
-      m_PersistentCalls:
-        m_Calls: []
   agent: {fileID: 4045958581566686854}
+  walkArea: {fileID: 0}
+  waterSources:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!195 &4045958581566686854
 NavMeshAgent:
   m_ObjectHideFlags: 0
