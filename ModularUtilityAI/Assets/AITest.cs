@@ -20,6 +20,7 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
 
     private float thirst = 0;
     private float hunger = 0;
+    private float tiredness = 0;
 
     public void AIAwake()
     {
@@ -38,7 +39,10 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
             thirst = Mathf.Min(10, thirst + 0.05f * Time.deltaTime);
         }
 
-
+        if(!B_Sleep.IsActive())
+        {
+            tiredness = Mathf.Min(1, tiredness + Time.deltaTime / (TimeScript.instance.cycleDurationSeconds/2));
+        }
     }
 
 
@@ -55,14 +59,10 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     {
         return 0.5f;
     }
-
-
-    public void RunActive()
+    public float SleepEvaluator(UAIBehaviour behaviour)
     {
-        agent.SetDestination(transform.position + (transform.position - Player.instance.marker.transform.position).normalized * 5);
-        hunger = Mathf.Min(10, hunger + Random.Range(0f, 2f) * Time.deltaTime);
+        return tiredness;
     }
-
 
     public void DrinkActive()
     {
@@ -104,15 +104,14 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
 
     public void SleepStart()
     {
-        agent.SetDestination(FindClosest(beds).position);
+        agent.SetDestination(FindRandom(beds).position);
     }
     public void SleepActive()
     {
         if (IsAtDestination(3))
         {
-
+            tiredness = Mathf.Max(0, tiredness - Time.deltaTime / (TimeScript.instance.cycleDurationSeconds / 3));
         }
-
     }
 
     public Vector3 RandomPointInBounds(Bounds bounds)
@@ -160,6 +159,11 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
             }
         }
         return closest;
+    }
+
+    public Transform FindRandom(GameObject[] gos)
+    {
+        return gos[Random.Range(0, gos.Length+1)].transform;
     }
 
     public bool IsAtDestination(float dist)

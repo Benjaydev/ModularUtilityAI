@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589245, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1069,7 +1069,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1706713195}
-  m_RootOrder: 18
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &440300843
 BoxCollider:
@@ -1493,7 +1493,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: a24d2f275cbfa4e48a9606d907f60cff, type: 2}
-  - {fileID: 2100000, guid: 309c7560c4407df44911f67b4d4d2d0a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1633,7 +1632,7 @@ GameObject:
   - component: {fileID: 582010235}
   - component: {fileID: 582010234}
   m_Layer: 0
-  m_Name: Cube (21)
+  m_Name: Marble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2028,6 +2027,136 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de1ad377dfd08844ba6c4fba7e76be3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderers:
+  - renderer: {fileID: 619841695}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1502953950}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 81298644}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1768234400}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 2076848}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 717153751}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1651635255}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1931695632}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 152335352}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1498557095}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1715400613}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 2034262438}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1232288962}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 356864718}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 111355980}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 440300844}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1918220978}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1726457417}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1512622985}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 474371205}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1474134351}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 507181314}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 688780475}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 623759277}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 327894195}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1745609090}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 20030391}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1285778680}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 1236183321}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 473125102}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 948750730}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  - renderer: {fileID: 511226257}
+    distance: 0
+    doubleMats: []
+    singleMat: []
+  solidMaterial: {fileID: 2100000, guid: 309c7560c4407df44911f67b4d4d2d0a, type: 2}
 --- !u!1 &641363843
 GameObject:
   m_ObjectHideFlags: 0
@@ -2637,7 +2766,7 @@ GameObject:
   - component: {fileID: 978215707}
   - component: {fileID: 978215706}
   m_Layer: 0
-  m_Name: Cube (22)
+  m_Name: Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2831,7 +2960,7 @@ GameObject:
   - component: {fileID: 1116926834}
   - component: {fileID: 1116926833}
   m_Layer: 0
-  m_Name: Cube (17)
+  m_Name: Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2850,7 +2979,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1706713195}
-  m_RootOrder: 16
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1116926833
 BoxCollider:
@@ -2928,7 +3057,7 @@ GameObject:
   - component: {fileID: 1151358747}
   - component: {fileID: 1151358746}
   m_Layer: 0
-  m_Name: Cube (18)
+  m_Name: Fridge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2947,7 +3076,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1706713195}
-  m_RootOrder: 17
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1151358746
 BoxCollider:
@@ -3798,7 +3927,7 @@ GameObject:
   - component: {fileID: 1490999047}
   - component: {fileID: 1490999046}
   m_Layer: 0
-  m_Name: Cube (16)
+  m_Name: Table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3817,7 +3946,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1706713195}
-  m_RootOrder: 15
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1490999046
 BoxCollider:
@@ -4628,11 +4757,11 @@ Transform:
   - {fileID: 1232288960}
   - {fileID: 356864716}
   - {fileID: 111355978}
+  - {fileID: 440300842}
+  - {fileID: 1918220976}
   - {fileID: 1490999045}
   - {fileID: 1116926832}
   - {fileID: 1151358745}
-  - {fileID: 440300842}
-  - {fileID: 1918220976}
   - {fileID: 582010233}
   - {fileID: 978215705}
   - {fileID: 1993951835}
@@ -5444,7 +5573,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1706713195}
-  m_RootOrder: 19
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1918220977
 BoxCollider:
