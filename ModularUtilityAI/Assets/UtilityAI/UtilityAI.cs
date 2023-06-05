@@ -38,11 +38,6 @@ public class UtilityAI : MonoBehaviour
     // Custom behaviour fields
     [SerializeField]
     private Creationfield[] behavioursToGenerate = new Creationfield[0];
-    // Button used to show a button in inspector
-    [SerializeField]
-    [Tooltip("Generate a custom UtilityAI class with the custom behaviour fields.")]
-    public UtilityAIButton generateButton = new UtilityAIButton();
-
 
     protected List<UAIBehaviour> behaviours = new List<UAIBehaviour>();
     [System.NonSerialized]
@@ -237,7 +232,7 @@ public class UtilityAI : MonoBehaviour
 
     [ContextMenu("Generate AI Instance")]
     [ExecuteInEditMode]
-    private void Build()
+    public void GenerateAIInstance()
     {
         if(GetType().ToString() == "UtilityAI")
         {
@@ -289,6 +284,8 @@ public class UtilityAI : MonoBehaviour
         // Recompile scripts
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+
+
     }
 
     private string BuildTemplate(string csName)
@@ -306,7 +303,8 @@ public class UtilityAI : MonoBehaviour
 
 
 
-        string templateParameters = "    [Header(\"Custom Behaviours\")]\r\n";
+        string templateParameters = "    \r\n";
+        string templateBehaviourNamesField = "    [SerializeField] \r\n    private string[] behaviourNames = new string[" + behavioursToGenerate.Length + "] {";
 
         string templateAwake =
             "\r\n    // Start is called before the first frame update\r\n    " +
@@ -345,6 +343,9 @@ public class UtilityAI : MonoBehaviour
         {
             // Add the custom parameters for each field
             templateParameters += "    public UAIBehaviour B_" + behavioursToGenerate[i].name + " = new UAIBehaviour(\"" + behavioursToGenerate[i].name + "\", " + behavioursToGenerate[i].valueRangeMin.ToString() + "f, " + behavioursToGenerate[i].valueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
+            
+            if(i < behavioursToGenerate.Length - 1){ templateBehaviourNamesField += "\"" + behavioursToGenerate[i].name + "\", "; }
+            else{ templateBehaviourNamesField += "\"" + behavioursToGenerate[i].name + "\" };\r\n"; }
 
             // Add custom parameters to list for iteration use in AI
             templateAwake += "        behaviours.Add(B_" + behavioursToGenerate[i].name + ");\r\n";
@@ -360,7 +361,7 @@ public class UtilityAI : MonoBehaviour
         templateUpdate += "    }\r\n\r\n";
         templateGizmos += "        }\r\n    }\r\n#endif";
 
-        return templateBeginning + templateParameters + templateAwake + templateUpdate + templateGizmos + "\r\n}";
+        return templateBeginning + templateParameters + templateBehaviourNamesField + templateAwake + templateUpdate + templateGizmos + "\r\n}";
     }
 
 #endif

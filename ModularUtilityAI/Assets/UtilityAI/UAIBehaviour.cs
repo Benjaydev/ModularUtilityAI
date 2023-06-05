@@ -27,7 +27,6 @@ public class UAIBehaviour
 
     public string displayName = "Behaviour";
 
-    private bool displayInInspector = false;
 
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods

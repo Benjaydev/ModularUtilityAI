@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589245, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6361,12 +6361,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 211919007}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: evaluatorTest.delegateMethodName
       value: TEST
       objectReference: {fileID: 0}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Talk.Evaluator.delegateMethodName
+      value: SleepEvaluator
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: B_Wander.InterruptConditions.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[4].name
+      value: Sleep
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[5].name
+      value: Poop
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[6].name
+      value: lol
       objectReference: {fileID: 0}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: evaluatorTest.frontEndParameters.Array.size
@@ -6403,6 +6423,18 @@ PrefabInstance:
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: B_Eat.InterruptConditions.Array.data[0].delegateIndex
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[4].evaluationCooldown
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[5].evaluationCooldown
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: behavioursToGenerate.Array.data[6].evaluationCooldown
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: evaluatorTest.frontEndParameters.Array.data[2].STRING

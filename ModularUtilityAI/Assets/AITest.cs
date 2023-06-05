@@ -31,11 +31,11 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     private float hunger = 0;
     private float tiredness = 0;
 
+    public float test = 10023;
 
 
     public void AIAwake()
     {
-
     }
 
 
@@ -51,10 +51,10 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
             thirst = Mathf.Min(10, thirst + 0.05f * Time.deltaTime);
         }
 
-        if(!B_Sleep.IsActive())
-        {
-            tiredness = Mathf.Min(1, tiredness + Time.deltaTime / (TimeScript.instance.cycleDurationSeconds/2));
-        }
+        //if(!B_Sleep.IsActive())
+        //{
+        //    tiredness = Mathf.Min(1, tiredness + Time.deltaTime / (TimeScript.instance.cycleDurationSeconds/2));
+        //}
     }
 
 
