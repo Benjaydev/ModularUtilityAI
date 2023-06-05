@@ -8,7 +8,6 @@ using UnityEngine.UIElements;
 
 public class MyCustomEditor : EditorWindow
 {
-    [MenuItem("UtilityAI/Generator")]
     public static void ShowMyEditor()
     {
         // This method is called when the user selects the menu item in the Editor

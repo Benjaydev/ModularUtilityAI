@@ -1,5 +1,16 @@
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
+
+
+[System.Serializable]
+public enum ThirstEnum
+{
+    EqualTo,
+    LessThan,
+    GreaterThan,
+}
 
 public class AITest : UtilityAI_AITest, IUtilityAIMethods
 {
@@ -16,14 +27,15 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
     [SerializeField]
     private GameObject[] foodSources;
 
-
-
     private float thirst = 0;
     private float hunger = 0;
     private float tiredness = 0;
 
+
+
     public void AIAwake()
     {
+
     }
 
 
@@ -123,19 +135,31 @@ public class AITest : UtilityAI_AITest, IUtilityAIMethods
         );
     }
 
-    public float TalkEvaluator(UAIBehaviour behaviour)
+    public float TalkEvaluator()
     {
         return 0f;
     }
 
-    public bool TooHungry(UAIBehaviour behaviour)
+    public bool TooHungry()
     {
         return hunger >= 10;
     }
 
-    public bool NotThirsty(UAIBehaviour behaviour)
+
+    public bool ThirstCheck(float value, ThirstEnum calculationType)
     {
-        return thirst <= 0;
+        switch (calculationType)
+        {
+            case ThirstEnum.EqualTo:
+            default:
+                return thirst == value;
+            case ThirstEnum.LessThan:
+                return thirst < value;
+            case ThirstEnum.GreaterThan:
+                return thirst > value;
+
+
+        }
     }
 
 

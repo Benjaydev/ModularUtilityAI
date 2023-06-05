@@ -27,21 +27,17 @@ public class UAIBehaviour
 
     public string displayName = "Behaviour";
 
+    private bool displayInInspector = false;
+
     // The evaluator is a methods that calculates the wanted behaviour value.
     // The user can assign custom methods
     [Tooltip("Method that calculates the wanted behaviour value. Must take UAIBEhaviour as parameter and return float.")]
     public DelegateContainer<float, UAIBehaviour> Evaluator = new DelegateContainer<float, UAIBehaviour>();
 
 
-    public float timerDuration = 5f;
-    [System.NonSerialized]
-    public float durationCount = 0f;
     // Conditions that when any are met, will stop this behaviour
-    [Tooltip("Conditions that when any are met, this behaviour will end. Must take UAIBEhaviour as parameter and return boolean.")]
-    public List<DelegateContainer<bool, UAIBehaviour>> InterruptConditions = new List<DelegateContainer<bool, UAIBehaviour>>()
-    {
-        new DelegateContainer<bool, UAIBehaviour>(UtilityAI.TimerCondition)
-    };
+    [Tooltip("Conditions that when any are met, this behaviour will end. Must return boolean.")]
+    public List<DelegateContainer<bool>> InterruptConditions = new List<DelegateContainer<bool>>();
 
     public UnityEvent WhenActive;
     public UnityEvent OnStart;
@@ -64,9 +60,9 @@ public class UAIBehaviour
         Evaluator?.Init();
 
         // Add all inspector condition delegate calls to code only list
-        foreach (DelegateContainer<bool, UAIBehaviour> condition in InterruptConditions)
+        foreach (DelegateContainer<bool> condition in InterruptConditions)
         {
-            condition?.Init();
+            condition?.Init(this);
         }
 
     }
@@ -75,14 +71,12 @@ public class UAIBehaviour
     public void End()
     {
         isActive = false;
-        durationCount = 0f;
         OnEnd.Invoke();
     }
 
     public void Start()
     {
         isActive = true;
-        durationCount = 0f;
         OnStart.Invoke();
     }
     private void ValidateEvaluator()
@@ -93,11 +87,11 @@ public class UAIBehaviour
         }
 
         // Add all inspector condition delegate calls to code only list
-        foreach (DelegateContainer<bool, UAIBehaviour> condition in InterruptConditions)
+        foreach (DelegateContainer<bool> condition in InterruptConditions)
         {
             if (!condition.IsFresh())
             {
-                condition?.Init();
+                condition?.Init(this);
             }
 
         }
@@ -124,5 +118,25 @@ public class UAIBehaviour
 
         return value;
     }
+
+    // Default condition methods
+    // ----------------------------------
+    // ----------------------------------
+    // ----------------------------------
+    private float timerDurationCount = 0;
+    public bool TimerCondition(float duration, bool unscaledTime)
+    {
+        timerDurationCount += unscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+        Debug.Log(displayName + " " + timerDurationCount);
+        if (timerDurationCount >= duration)
+        {
+
+            return true;
+        }
+        return false;
+    }
+
+    // ----------------------------------
+    // ----------------------------------
 
 }

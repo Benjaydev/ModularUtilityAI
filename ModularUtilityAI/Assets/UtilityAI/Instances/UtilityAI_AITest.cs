@@ -8,11 +8,19 @@ using UnityEngine.Windows;
 public class UtilityAI_AITest : UtilityAI
 {
     [Header("Custom Behaviours")]
+    [HideInInspector]
     public UAIBehaviour B_Wander = new UAIBehaviour("Wander", 0f, 0f, 0f);
+    [HideInInspector]
     public UAIBehaviour B_Drink = new UAIBehaviour("Drink", 0f, 0f, 0f);
+    [HideInInspector]
     public UAIBehaviour B_Eat = new UAIBehaviour("Eat", 0f, 0f, 0f);
+    [HideInInspector]
     public UAIBehaviour B_Talk = new UAIBehaviour("Talk", 0f, 0f, 0f);
+    [HideInInspector]
     public UAIBehaviour B_Sleep = new UAIBehaviour("Sleep", 0f, 0f, 0f);
+
+    [SerializeField]
+    private string[] behaviourNames = new string[5] { "Wander", "Drink", "Eat", "Talk", "Sleep" };
 
     // Start is called before the first frame update
     protected override void Awake()

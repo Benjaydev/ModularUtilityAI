@@ -98,9 +98,9 @@ public class UtilityAI : MonoBehaviour
             currentBehaviour.WhenActive?.Invoke();
 
             // Check all interrupt conditions
-            foreach (DelegateContainer<bool, UAIBehaviour> condition in currentBehaviour.InterruptConditions)
+            foreach (DelegateContainer<bool> condition in currentBehaviour.InterruptConditions)
             {
-                if (condition.Invoke(currentBehaviour))
+                if (condition.Invoke())
                 {
                     currentBehaviour.End();
                     currentBehaviour = null;
@@ -121,8 +121,6 @@ public class UtilityAI : MonoBehaviour
                 currentBehaviour.Start();
             }
         }
-
-
 
 
         // Call child AI update functionality
@@ -201,21 +199,16 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     // ----------------------------------
 
+
     // Default condition methods
     // ----------------------------------
     // ----------------------------------
     // ----------------------------------
-    public static bool TimerCondition(UAIBehaviour behaviour)
+    public bool TimerCondition(float duration, bool unscaledTime, UAIBehaviour owner)
     {
-
-        behaviour.durationCount += Time.deltaTime;
-        Debug.Log(behaviour.displayName + ": " + behaviour.durationCount);
-        if (behaviour.durationCount >= behaviour.timerDuration)
-        {
-            return true;
-        }
-        return false;
+        return owner.TimerCondition(duration, unscaledTime);
     }
+
     // ----------------------------------
     // ----------------------------------
     // ----------------------------------

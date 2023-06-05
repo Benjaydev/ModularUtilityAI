@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589245, b: 0.2978263, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -749,6 +749,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 152335349}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &211919005 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4020842263875501658, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+  m_PrefabInstance: {fileID: 4106097198985876351}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &211919007 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+  m_PrefabInstance: {fileID: 4106097198985876351}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211919005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 032a6818d2d713a448b695ff3c2eef6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &327894192
 GameObject:
   m_ObjectHideFlags: 0
@@ -2528,7 +2544,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62cdcb5ac40fdf44fb7a8945977f80e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instance: {fileID: 0}
   cycleDurationSeconds: 300
 --- !u!1 &823909630
 GameObject:
@@ -6293,6 +6308,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AI
       objectReference: {fileID: 0}
+    - target: {fileID: 4045958581566686854, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
       propertyPath: walkArea
       value: 
@@ -6330,8 +6349,236 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 511226255}
     - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
-      propertyPath: B_Wander.InterruptConditions.Array.size
+      propertyPath: evaluatorTest.delegateIndex
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.delegateObject
+      value: 
+      objectReference: {fileID: 211919005}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.delegateScript
+      value: 
+      objectReference: {fileID: 211919007}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.delegateMethodName
+      value: TEST
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[1].INT
+      value: 1231
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].typeName
+      value: System.Boolean
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[0].FLOAT
+      value: 1.111
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[1].FLOAT
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[2].FLOAT
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[3].FLOAT
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[4].FLOAT
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Eat.InterruptConditions.Array.data[0].delegateIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[2].STRING
+      value: Haha
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[4].SCRIPT
+      value: 
+      objectReference: {fileID: 211919007}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].delegateIndex
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].delegateIndex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[0].usingType
+      value: FLOAT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[1].usingType
+      value: INT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[2].usingType
+      value: STRING
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[3].usingType
+      value: GAMEOBJECT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[4].usingType
+      value: SCRIPT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].delegateObject
+      value: 
+      objectReference: {fileID: 211919005}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].delegateScript
+      value: 
+      objectReference: {fileID: 211919007}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].delegateObject
+      value: 
+      objectReference: {fileID: 211919005}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].delegateScript
+      value: 
+      objectReference: {fileID: 211919007}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: evaluatorTest.frontEndParameters.Array.data[3].GAMEOBJECT
+      value: 
+      objectReference: {fileID: 473125099}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].delegateMethodName
+      value: ThirstCheck
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].delegateMethodName
+      value: TimerCondition
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].delegateMethodName
+      value: ThirstCheck
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Eat.InterruptConditions.Array.data[0].frontEndParameters.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].frontEndParameters.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].INT
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].INT
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[2].INT
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.data[1].INT
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].frontEndParameters.Array.data[0].FLOAT
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].BOOL
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.data[1].BOOL
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[0].FLOAT
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].FLOAT
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.data[0].FLOAT
+      value: 23213
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Eat.InterruptConditions.Array.data[0].frontEndParameters.Array.data[0].usingType
+      value: FLOAT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Eat.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].usingType
+      value: BOOL
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Eat.InterruptConditions.Array.data[0].frontEndParameters.Array.data[2].usingType
+      value: OWNER
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].frontEndParameters.Array.data[0].usingType
+      value: FLOAT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Drink.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].usingType
+      value: ENUM
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[0].usingType
+      value: FLOAT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[1].usingType
+      value: BOOL
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[2].usingType
+      value: OWNER
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[3].usingType
+      value: OWNER
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[4].usingType
+      value: GAMEOBJECT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[0].frontEndParameters.Array.data[5].usingType
+      value: SCRIPT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.data[0].usingType
+      value: FLOAT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4468926206683166758, guid: c5af2913abce004429c41baa5acc2646, type: 3}
+      propertyPath: B_Wander.InterruptConditions.Array.data[1].frontEndParameters.Array.data[1].usingType
+      value: BOOL
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5af2913abce004429c41baa5acc2646, type: 3}
