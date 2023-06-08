@@ -196,7 +196,7 @@ public class DelegateContainerDrawer : PropertyDrawer
 
             // Create title label
             Rect methodLabel = new Rect(position.x + 4 + position.width / 2, position.y, position.width, 21f);
-            EditorGUI.LabelField(methodLabel, new GUIContent(delegateTypeName.stringValue));
+            //EditorGUI.LabelField(methodLabel, new GUIContent(delegateTypeName.stringValue));
 
             if (selectedObject != null)
             {
@@ -211,7 +211,6 @@ public class DelegateContainerDrawer : PropertyDrawer
                     // Get all methods from script
                     foreach (MethodInfo info in script.GetType().GetMethods(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static))
                     {
-                        ParameterInfo[] parameters = info.GetParameters();
                         // Check whether method's return type matches container's return type, there is only 1 parameters, and this parameter is of type UAIBehaviour
                         if (info.ReturnType.FullName == delegateTypeName.stringValue)
                         {
@@ -221,8 +220,6 @@ public class DelegateContainerDrawer : PropertyDrawer
                         }
                     }
                 }
-
-
 
                 // Get names of methods
                 string[] names = new string[infos.Count];
@@ -368,9 +365,6 @@ public class DelegateContainerDrawer : PropertyDrawer
 
                     }
                 }
-
-
-
 
             }
             // Object is null

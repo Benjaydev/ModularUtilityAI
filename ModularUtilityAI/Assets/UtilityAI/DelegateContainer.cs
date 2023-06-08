@@ -4,6 +4,70 @@ using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
 
+public class ExecutionTester : MonoBehaviour
+{
+    public static float timeSinceStartup;
+
+    private static float startTimeMethodInfo;
+
+    private static float totalTimeMethodInfo;
+    private static int totalMethodInfoCalls;
+
+    private static float startTimeDelegate;
+
+    private static float totalTimeDelegate;
+    private static int totalMethodDelegate;
+
+    private static float startTimeEvent;
+
+    private static float totalTimeEvent;
+    private static int totalMethodEvent;
+
+    public static void SetStartMethodInfo()
+    {
+        startTimeMethodInfo = Time.realtimeSinceStartup;
+    }
+    public static void SetEndMethodInfo()
+    {
+        totalTimeMethodInfo += Time.realtimeSinceStartup - startTimeMethodInfo;
+        totalMethodInfoCalls++;
+    }
+    public static void SetStartDelegate()
+    {
+        startTimeDelegate = Time.realtimeSinceStartup;
+    }
+    public static void SetEndDelegate()
+    {
+        totalTimeDelegate += Time.realtimeSinceStartup - startTimeDelegate;
+        totalMethodDelegate++;
+    }
+    public static void SetStartEvent()
+    {
+        startTimeEvent = Time.realtimeSinceStartup;
+    }
+    public static void SetEndEvent()
+    {
+        totalTimeEvent += Time.realtimeSinceStartup - startTimeEvent;
+        totalMethodEvent++;
+    }
+
+    public static void ShowResults() { 
+        Debug.Log("Total MethodInfo calls: " + totalMethodInfoCalls);
+        Debug.Log("Average time spent in MethodInfo: " + ((totalTimeMethodInfo / totalMethodInfoCalls)*1000) + " ms");
+
+        Debug.Log("Total Delegate calls: " + totalMethodDelegate);
+        Debug.Log("Average time spent in Delegate: " + ((totalTimeDelegate / totalMethodDelegate)*1000) + " ms");
+
+        Debug.Log("Total Event calls: " + totalMethodEvent);
+        Debug.Log("Average time spent in Event: " + ((totalTimeEvent / totalMethodEvent)*1000) + " ms");
+
+        Debug.Log("Total Time: " + timeSinceStartup + " seconds");
+    }
+}
+
+
+
+
 [Serializable]
 public abstract class DelegateContainerBase
 {
@@ -28,20 +92,9 @@ public abstract class DelegateContainerBase
         return delegateScript != null && delegateObject != null;
     }
 
-
-    public virtual void Set(string methodName, MonoBehaviour script, object[] parameters = null)
-    {
-        method = script.GetType().GetMethod(methodName);
-        delegateMethodName = method.Name;
-        delegateScript = script;
-        delegateObject = delegateScript.gameObject;
-
-    }
-
-
     public virtual void Init()
     {
-        if (delegateObject != null)
+        if (delegateScript != null)
         {
             try
             {
@@ -120,32 +173,23 @@ public class DelegateContainer<R> : DelegateContainerBase, ISerializationCallbac
     public DelegateContainer() { }
     public DelegateContainer(string methodName, MonoBehaviour script, object[] parameters = null)
     {
+        Set(methodName, script, parameters);
+    }
+
+    public void Set(string methodName, MonoBehaviour script, object[] parameters = null)
+    {
         method = script.GetType().GetMethod(methodName);
         delegateMethodName = method.Name;
         delegateScript = script;
-        backEndParameters = parameters;
-    }
-
-    public R Invoke(object[] p = null)
-    {
-        return method == null ? default(R) : (R)method.Invoke(delegateScript, p == null ? backEndParameters : p);
-    }
-
-    public override void Set(string methodName, MonoBehaviour script, object[] parameters = null)
-    {
-        base.Set(methodName, script, parameters);
-        backEndParameters = parameters;
-    }
-    public override void Init()
-    {
-        base.Init();
-        // Get all inspector-set parameters and convert them to object parameters for later invocation
-        backEndParameters = new object[frontEndParameters.Length];
-        for(int i = 0; i < frontEndParameters.Length; i++)
+        if(delegateScript != null)
         {
-            backEndParameters[i] = frontEndParameters[i].GetValid();
+            delegateObject = delegateScript.gameObject;
         }
+
+        backEndParameters = parameters;
+
     }
+
     public void Init(UAIBehaviour owner)
     {
         base.Init();
@@ -167,6 +211,24 @@ public class DelegateContainer<R> : DelegateContainerBase, ISerializationCallbac
 
         }
     }
+    public override void Init()
+    {
+        base.Init();
+        // Get all inspector-set parameters and convert them to object parameters for later invocation
+        backEndParameters = new object[frontEndParameters.Length];
+        for (int i = 0; i < frontEndParameters.Length; i++)
+        {
+            backEndParameters[i] = frontEndParameters[i].GetValid();
+        }
+    }   
+
+
+    public R Invoke(object[] p = null)
+    {
+        ExecutionTester.SetStartMethodInfo();
+        return method == null ? default(R) : (R)method.Invoke(delegateScript, p == null ? backEndParameters : p);
+    }
+
 
 
     public void OnBeforeSerialize() { }
@@ -183,6 +245,7 @@ public class DelegateContainer<R> : DelegateContainerBase, ISerializationCallbac
 public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCallbackReceiver
 {
     public delegate R customDelegate(P1 param);
+    public customDelegate del;
 
     [SerializeField]
     private string typeName = typeof(R).FullName;
@@ -193,22 +256,41 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
     public DelegateContainer(){}
     public DelegateContainer(customDelegate m)
     {
-        method = m.Method;
+        Set(m);
+    }
+    public void Set(customDelegate m)
+    {  
+        del = m;
+        method = del.Method;
         delegateMethodName = method.Name;
+        delegateScript = (MonoBehaviour)m.Target;
+        if(delegateScript != null)
+        {
+            delegateObject = delegateScript.gameObject;
+        }
+
+    }
+
+
+    public override void Init()
+    {
+        base.Init();
+        if(delegateScript != null)
+        {
+            try
+            {
+                del = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), method.IsStatic ? null : delegateScript, method);
+            } 
+            catch(Exception e) { Debug.LogWarning(e); }
+        }
     }
 
     public R Invoke(P1 param)
     {
-        return method == null ? default(R) : (R)method.Invoke(delegateScript, new object[] { param });
+        ExecutionTester.SetStartDelegate();
+        return del == null ? default(R) : del.Invoke(param);
     }
 
-    public void Set(customDelegate m, object script)
-    {
-        method = m.Method;
-        delegateMethodName = method.Name;
-        delegateScript = (MonoBehaviour)script;
-        delegateObject = delegateScript.gameObject;
-    }
 
     public void OnBeforeSerialize(){}
 
@@ -224,7 +306,8 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
 [Serializable]
 public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializationCallbackReceiver
 {
-    public delegate R customDelegate(P1 param);
+    public delegate R customDelegate(P1 param, P2 param2);
+    public customDelegate del;
 
     [SerializeField]
     private string typeName = typeof(R).FullName;
@@ -235,25 +318,39 @@ public class DelegateContainer<R, P1, P2> : DelegateContainerBase, ISerializatio
     [SerializeField]
     private string paramName2 = typeof(P2).FullName;
 
-    public DelegateContainer()
-    {
-    }
     public DelegateContainer(customDelegate m)
     {
-        method = m.Method;
+        Set(m);
+    }
+    public void Set(customDelegate m)
+    {
+        del = m;
+        method = del.Method;
         delegateMethodName = method.Name;
+        delegateScript = (MonoBehaviour)m.Target;
+        if (delegateScript != null)
+        {
+            delegateObject = delegateScript.gameObject;
+        }
     }
 
-    public R Invoke(P1 param1, P2 param2)
+
+    public override void Init()
     {
-        return method == null ? default(R) : (R)method.Invoke(delegateScript, new object[] { param1, param2 });
+        base.Init();
+        if (delegateScript != null)
+        {
+            try
+            {
+                del = (customDelegate)Delegate.CreateDelegate(typeof(customDelegate), method.IsStatic ? null : delegateScript, method);
+            }
+            catch (Exception e) { Debug.LogWarning(e); }
+        }
     }
-    public void Set(customDelegate m, object script)
+
+    public R Invoke(P1 param, P2 param2)
     {
-        method = m.Method;
-        delegateMethodName = method.Name;
-        delegateScript = (MonoBehaviour)script;
-        delegateObject = delegateScript.gameObject;
+        return del == null ? default(R) : del.Invoke(param, param2);
     }
 
     public void OnBeforeSerialize() { }

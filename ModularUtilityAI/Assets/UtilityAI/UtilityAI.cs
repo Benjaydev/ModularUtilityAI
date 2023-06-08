@@ -6,13 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-
-[System.Serializable]
-public class UtilityAIButton
-{ 
-
-}
-
 public interface IUtilityAIMethods
 {
     void AIAwake();
@@ -27,8 +20,8 @@ public class UtilityAI : MonoBehaviour
     public struct Creationfield
     {
         public string name;
-        public float valueRangeMin;
-        public float valueRangeMax;
+        public float expectedValueRangeMin;
+        public float expectedValueRangeMax;
         public float evaluationCooldown;
 
     }
@@ -48,6 +41,12 @@ public class UtilityAI : MonoBehaviour
     [Header("Behaviour Systems")]
     [Tooltip("The method used to choose new behaviours. Returns an index of a supplied weight. Must take float array as parameter and return int.\r\n E.g. Takes in an array of 5 floats, returns an index from 0-4.")]
     public DelegateContainer<int, float[]> BehaviourSelector = new DelegateContainer<int, float[]>(GetIndexOfRandomisedWeights);
+    public float behaviourSelectorCooldown = 1f;
+    private float behaviourSelectorCooldownCount = 0f;
+
+    public bool showDebug = false;
+    public Vector3 valueDisplayAreaOffset = new Vector3(0,0,0);
+
 
     protected virtual void Awake()
     {
@@ -80,48 +79,66 @@ public class UtilityAI : MonoBehaviour
             {
                 currentBehaviour?.End();
                 currentBehaviour = behaviours[i];
-                currentBehaviour?.Start();
+                currentBehaviour.Start();
             }
 
             weights[i] = val;
         }
 
-        // Call current behaviour events
-        if (currentBehaviour != null && currentBehaviour.IsActive())
-        {
-            // Call the events that should happen when this behaviour is active
-            currentBehaviour.WhenActive?.Invoke();
-
-            // Check all interrupt conditions
-            foreach (DelegateContainer<bool> condition in currentBehaviour.InterruptConditions)
-            {
-                if (condition.Invoke())
-                {
-                    currentBehaviour.End();
-                    currentBehaviour = null;
-                    break;
-                }
-            }
-        }
+        behaviourSelectorCooldownCount += Time.deltaTime;
 
         // If there is no current behaviour or behaviour has no conditions
-        if (currentBehaviour == null || !currentBehaviour.IsActive() || currentBehaviour.InterruptConditions.Count == 0)
+        if (currentBehaviour != null && currentBehaviour.IsActive())
         {
-            // Select new behaviour
-            int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
-            if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
+            if (currentBehaviour.WhenActive.GetPersistentEventCount() > 0)
             {
-                currentBehaviour?.End();
-                currentBehaviour = behaviours[chosenBehaviourIndex];
-                currentBehaviour.Start();
+                ExecutionTester.SetStartEvent();
             }
+            // Call the events that should happen when this behaviour is active
+            currentBehaviour.WhenActive.Invoke();
+
+            if(behaviourSelectorCooldownCount >= behaviourSelectorCooldown)
+            {
+                // Check all interrupt conditions
+                foreach (DelegateContainer<bool> condition in currentBehaviour.InterruptConditions)
+                {
+                    if (condition.Invoke())
+                    {
+                        ChooseNewBehaviour(weights);
+                        break;
+                    }
+                    // if condition failed, and all conditions have to be met for a change, then break;
+                    if(currentBehaviour.allConditionsMustBeMet)
+                    {
+                        break;
+                    }
+                }
+                behaviourSelectorCooldownCount = 0;
+            }
+
         }
 
+        // If there is no active behaviour, find a new one
+        if(currentBehaviour == null || !currentBehaviour.IsActive())
+        {
+            ChooseNewBehaviour(weights);
+        }
 
         // Call child AI update functionality
         SendMessage("AIUpdate", SendMessageOptions.DontRequireReceiver);
     }
 
+    private void ChooseNewBehaviour(float[] weights)
+    {
+        // Select new behaviour
+        int chosenBehaviourIndex = BehaviourSelector.Invoke(weights);
+        if (chosenBehaviourIndex >= 0 && chosenBehaviourIndex < behaviours.Count)
+        {
+            currentBehaviour?.End();
+            currentBehaviour = behaviours[chosenBehaviourIndex];
+            currentBehaviour.Start();
+        }
+    }
 
 
     // Default weight calculation methods
@@ -130,6 +147,7 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public static int GetIndexOfRandomisedWeights(float[] weights)
     {
+        ExecutionTester.SetEndDelegate();
         // Get total sum
         float sum = 0;
         for (int i = 0; i < weights.Length; i++)
@@ -160,6 +178,7 @@ public class UtilityAI : MonoBehaviour
     }
     public static int GetIndexOfHighestWeight(float[] weights)
     {
+        ExecutionTester.SetEndDelegate();
         int highestIndex = 0;
         float highestWeight = weights[0];
         // Find the value that pushes sum above random value
@@ -176,6 +195,7 @@ public class UtilityAI : MonoBehaviour
     }
     public static int GetIndexOfLowestWeight(float[] weights)
     {
+        ExecutionTester.SetEndDelegate();
         int lowestIndex = 0;
         float lowestWeight = weights[0];
         // Find the value that pushes sum above random value
@@ -201,7 +221,53 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public bool TimerCondition(float duration, bool unscaledTime, UAIBehaviour owner)
     {
-        return owner.TimerCondition(duration, unscaledTime);
+        ExecutionTester.SetEndMethodInfo();
+        return owner.TimerCondition(duration, unscaledTime, behaviourSelectorCooldown);
+    }
+
+    // Score comparisons
+    public bool ScoreLessThan(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score < value;
+    }
+    public bool ScoreGreaterThan(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score > value;
+    }
+    public bool ScoreLessThanOrEqualTo(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score <= value;
+    }
+    public bool ScoreGreaterThanOrEqualTo(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score <= value;
+    }
+    public bool ScoreEqualTo(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score == value;
+    }
+    public bool ScoreNotEqualTo(float value, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score != value;
+    }
+
+    public bool ScoreWithinRange(float min, float max, bool rawScore, UAIBehaviour owner)
+    {
+        ExecutionTester.SetEndMethodInfo();
+        float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
+        return score >= min && score <= max;
     }
 
     // ----------------------------------
@@ -214,15 +280,18 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public static float EvaluateToOne(UAIBehaviour behaviour)
     {
+        ExecutionTester.SetEndDelegate();
         return 1f;
     }
     public static float EvaluateToMin(UAIBehaviour behaviour)
     {
-        return behaviour.valueRangeMin;
+        ExecutionTester.SetEndDelegate();
+        return behaviour.expectedValueRangeMin;
     }
     public static float EvaluateToMax(UAIBehaviour behaviour)
     {
-        return behaviour.valueRangeMax;
+        ExecutionTester.SetEndDelegate();
+        return behaviour.expectedValueRangeMax;
     }
     // ----------------------------------
     // ----------------------------------
@@ -264,7 +333,7 @@ public class UtilityAI : MonoBehaviour
         // Replace UtilityAI class inheritence with newly created class (csName)
         string inheritedFileText = System.IO.File.ReadAllText(inheritedPath);
         // If the inheritence change hasn't already been completed
-        if(inheritedFileText.IndexOf(inheritedName + " : " + csName + ", IUtilityAIMethods") == -1)
+        if(inheritedFileText.IndexOf(inheritedName + " : " + csName) == -1)
         {
             // Find where the class definition begins
             int ind = inheritedFileText.IndexOf(inheritedName);
@@ -277,7 +346,7 @@ public class UtilityAI : MonoBehaviour
             endInd--;
 
             // Replace the class definition line with one that inherits from newly created UtilityAI class
-            inheritedFileText = inheritedFileText.Remove(ind, endInd - ind -1).Insert(ind, inheritedName + " : " + csName + ", IUtilityAIMethods");
+            inheritedFileText = inheritedFileText.Remove(ind, endInd - ind -1).Insert(ind, inheritedName + " : " + csName);
             System.IO.File.WriteAllText(inheritedPath, inheritedFileText);
         }
 
@@ -325,24 +394,25 @@ public class UtilityAI : MonoBehaviour
             "    // Update is called once per frame\r\n" +
             "    private void OnDrawGizmos()\r\n" +
             "    {\r\n" +
-            "       var pos = transform.position;\r\n" +
-            "       float dist = (Camera.current.transform.position - pos).sqrMagnitude;\r\n" +
-            "       if(dist < 40000)\r\n" +
-            "       {\r\n" +
-            "           dist = Mathf.Sqrt(dist) / 10;\r\n" +
-            "           GUIStyle guiStyle = new GUIStyle();\r\n" +
-            "           guiStyle.alignment = TextAnchor.MiddleCenter;\r\n" +
-            "           guiStyle.normal.textColor = Color.red;\r\n" +
-            "           guiStyle.fontSize = (int)(20f / dist);\r\n" +
-            "           float textSeperation = 0.4f;\r\n" +
-            "           Vector2 dimensions = new Vector2(1, 0.4f*" + behavioursToGenerate.Length + ");\r\n\r\n" +
-            "           Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.displayName : \"None\"), guiStyle);\r\n";
+            "       if(showDebug) {\r\n" +
+            "           var pos = transform.position + valueDisplayAreaOffset;\r\n" +
+            "           float dist = (Camera.current.transform.position - pos).sqrMagnitude;\r\n" +
+            "           if(dist < 40000)\r\n" +
+            "           {\r\n" +
+            "               dist = Mathf.Sqrt(dist) / 10;\r\n" +
+            "               GUIStyle guiStyle = new GUIStyle();\r\n" +
+            "               guiStyle.alignment = TextAnchor.MiddleCenter;\r\n" +
+            "               guiStyle.normal.textColor = Color.red;\r\n" +
+            "               guiStyle.fontSize = (int)(20f / dist);\r\n" +
+            "               float textSeperation = 0.4f;\r\n" +
+            "               Vector2 dimensions = new Vector2(1, 0.4f*" + behavioursToGenerate.Length + ");\r\n\r\n" +
+            "               Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.displayName : \"None\"), guiStyle);\r\n";
 
 
         for (int i = 0; i < behavioursToGenerate.Length; i++)
         {
             // Add the custom parameters for each field
-            templateParameters += "    public UAIBehaviour B_" + behavioursToGenerate[i].name + " = new UAIBehaviour(\"" + behavioursToGenerate[i].name + "\", " + behavioursToGenerate[i].valueRangeMin.ToString() + "f, " + behavioursToGenerate[i].valueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
+            templateParameters += "    public UAIBehaviour B_" + behavioursToGenerate[i].name + " = new UAIBehaviour(\"" + behavioursToGenerate[i].name + "\", " + behavioursToGenerate[i].expectedValueRangeMin.ToString() + "f, " + behavioursToGenerate[i].expectedValueRangeMax.ToString() + "f, " + behavioursToGenerate[i].evaluationCooldown.ToString() + "f" + ");\r\n";
             
             if(i < behavioursToGenerate.Length - 1){ templateBehaviourNamesField += "\"" + behavioursToGenerate[i].name + "\", "; }
             else{ templateBehaviourNamesField += "\"" + behavioursToGenerate[i].name + "\" };\r\n"; }
@@ -351,7 +421,7 @@ public class UtilityAI : MonoBehaviour
             templateAwake += "        behaviours.Add(B_" + behavioursToGenerate[i].name + ");\r\n";
 
 
-            templateGizmos += "           Handles.Label(pos + new Vector3(0, dimensions.y * 2-(textSeperation*" + (i + 1) + "), 0), \"" + behavioursToGenerate[i].name + ": \" + (Mathf.Round(B_" + behavioursToGenerate[i].name + ".GetCurrentValue()*100) / 100).ToString(), guiStyle);\r\n";
+            templateGizmos += "               Handles.Label(pos + new Vector3(0, dimensions.y * 2-(textSeperation*" + (i + 1) + "), 0), \"" + behavioursToGenerate[i].name + ": \" + (Mathf.Round(B_" + behavioursToGenerate[i].name + ".GetCurrentValue()*100) / 100).ToString(), guiStyle);\r\n";
 
             //templateUpdate += "        Debug.Log(\"" + fields[i].name + "\");\r\n";
         }
@@ -359,7 +429,7 @@ public class UtilityAI : MonoBehaviour
         templateAwake += "    }\r\n\r\n";
 
         templateUpdate += "    }\r\n\r\n";
-        templateGizmos += "        }\r\n    }\r\n#endif";
+        templateGizmos += "        }    }\r\n    }\r\n#endif";
 
         return templateBeginning + templateParameters + templateBehaviourNamesField + templateAwake + templateUpdate + templateGizmos + "\r\n}";
     }

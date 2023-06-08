@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Reflection;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager.UI;
 
 [CustomEditor(typeof(UtilityAI), true)]
 public class UtilityAIInspectorOrganiser : Editor
@@ -13,9 +14,11 @@ public class UtilityAIInspectorOrganiser : Editor
     private SerializedObject utilityAI;
     private List<string> names = new List<string>();
     // Store behaviour property names so they can later be ignored (Also has some other properties that should be ignored)
-    private List<string> Bnames = new List<string>() { "BehaviourSelector", "behavioursToGenerate", "behaviourNames", "m_Script" };
+    private List<string> Bnames = new List<string>() { "BehaviourSelector", "behaviourSelectorCooldown", "behavioursToGenerate", "showDebug", "valueDisplayAreaOffset", "behaviourNames", "m_Script" };
     List<SerializedProperty> properties = new List<SerializedProperty>();
     private int currentTab;
+
+
     private void OnEnable()
     {
         utilityAI = new SerializedObject(target);
@@ -24,8 +27,8 @@ public class UtilityAIInspectorOrganiser : Editor
         names = new List<string>();
     
 
-    // Get all behaviours from the behaviours to generate list (Some of these may not yet be generated, so it must be sorted through)
-    SerializedProperty tabNames = utilityAI.FindProperty("behavioursToGenerate");
+        // Get all behaviours from the behaviours to generate list (Some of these may not yet be generated, so it must be sorted through)
+        SerializedProperty tabNames = utilityAI.FindProperty("behavioursToGenerate");
  
         // Get all the behaviour properties
         for (int i = 0; i < tabNames.arraySize; i++)
@@ -54,10 +57,6 @@ public class UtilityAIInspectorOrganiser : Editor
 
             }
         }
-        if (!names.Contains("Generate"))
-        {
-            names.Add("Generate");
-        }
 
     }
     public override void OnInspectorGUI()
@@ -65,50 +64,70 @@ public class UtilityAIInspectorOrganiser : Editor
         utilityAI.Update();
         EditorGUI.BeginChangeCheck();
 
-        // Get all the behaviour names
-        //PropertyInfo pro = target.GetType().GetProperty("BehaviourNames", BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance);
-        //string[] tabNames = (string[])pro.GetValue(target);
-
-
-
         // Draw default properties excluding the ones which will be customised/removed
         DrawPropertiesExcluding(utilityAI, Bnames.ToArray());
 
         // Draw the behaviour selector
         EditorGUILayout.PropertyField(utilityAI.FindProperty(Bnames[0]));
+        EditorGUILayout.PropertyField(utilityAI.FindProperty(Bnames[1]));
+
+        string[] namesArray = new string[names.Count+3];
+        for(int i = 0; i < names.Count; i++)
+        {
+            namesArray[i] = names[i];
+        }
+        namesArray[namesArray.Length - 1] = "[Help]";
+        namesArray[namesArray.Length - 2] = "[Generate]";
+        namesArray[namesArray.Length - 3] = "[Debug]";
+
 
         // Tabs
-        if(currentTab >= names.Count)
-            currentTab = names.Count-1;
-        currentTab = GUILayout.SelectionGrid(currentTab, names.ToArray(), (int)(Screen.width/100f));
+        if (currentTab >= namesArray.Length)
+            currentTab = namesArray.Length - 1;
+        int newTab = GUILayout.SelectionGrid(currentTab, namesArray, (int)(Screen.width/100f));
 
-        // The final tab is the generation tab
-        if(currentTab == names.Count-1)
+        // When switching to new tab, lose focus 
+        if(newTab != currentTab)
         {
-            SerializedProperty generate = utilityAI.FindProperty(Bnames[1]);
+            GUI.FocusControl(null);
+        }
+
+        if(newTab == namesArray.Length - 2)
+        {
+            SerializedProperty generate = utilityAI.FindProperty(Bnames[2]);
             generate.isExpanded = true;
             EditorGUILayout.PropertyField(generate, true);
             // Generate button
             if (GUILayout.Button("Generate"))
             {
                 ((UtilityAI)target).GenerateAIInstance();
-
-                EditorUtility.SetDirty(((UtilityAI)target));
             }
         }
+        else if(newTab == namesArray.Length - 3)
+        {
+            EditorGUILayout.PropertyField(utilityAI.FindProperty(Bnames[3]));
+            EditorGUILayout.PropertyField(utilityAI.FindProperty(Bnames[4]));
+        }
         // Show the behaviour tab
-        else
+        else if(newTab != namesArray.Length - 1)
         {
             // Current open tab
-            properties[currentTab].isExpanded = true;
-            EditorGUILayout.PropertyField(properties[currentTab]);
+            properties[newTab].isExpanded = true;
+            EditorGUILayout.PropertyField(properties[newTab]);
         }
 
 
         EditorGUI.EndChangeCheck();
         utilityAI.ApplyModifiedProperties();
 
-
+        // The final tab is the generation tab
+        if (newTab == namesArray.Length - 1)
+        {
+            UtilityAIHelpMenu window = (UtilityAIHelpMenu)EditorWindow.GetWindow(typeof(UtilityAIHelpMenu), false, "UtilityAIHelpMenu");
+            window.Show();
+            newTab = currentTab;
+        }
+        currentTab = newTab;
     }
 }
 
