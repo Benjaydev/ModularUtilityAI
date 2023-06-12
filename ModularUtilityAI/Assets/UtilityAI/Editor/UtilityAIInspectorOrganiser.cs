@@ -1,12 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.EventSystems;
-using System.Linq;
-using System.Reflection;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager.UI;
 
 [CustomEditor(typeof(UtilityAI), true)]
 public class UtilityAIInspectorOrganiser : Editor

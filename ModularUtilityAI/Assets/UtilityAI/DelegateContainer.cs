@@ -1,70 +1,6 @@
 using System;
 using System.Reflection;
-using System.Security.Cryptography;
-using UnityEditor;
 using UnityEngine;
-
-public class ExecutionTester : MonoBehaviour
-{
-    public static float timeSinceStartup;
-
-    private static float startTimeMethodInfo;
-
-    private static float totalTimeMethodInfo;
-    private static int totalMethodInfoCalls;
-
-    private static float startTimeDelegate;
-
-    private static float totalTimeDelegate;
-    private static int totalMethodDelegate;
-
-    private static float startTimeEvent;
-
-    private static float totalTimeEvent;
-    private static int totalMethodEvent;
-
-    public static void SetStartMethodInfo()
-    {
-        startTimeMethodInfo = Time.realtimeSinceStartup;
-    }
-    public static void SetEndMethodInfo()
-    {
-        totalTimeMethodInfo += Time.realtimeSinceStartup - startTimeMethodInfo;
-        totalMethodInfoCalls++;
-    }
-    public static void SetStartDelegate()
-    {
-        startTimeDelegate = Time.realtimeSinceStartup;
-    }
-    public static void SetEndDelegate()
-    {
-        totalTimeDelegate += Time.realtimeSinceStartup - startTimeDelegate;
-        totalMethodDelegate++;
-    }
-    public static void SetStartEvent()
-    {
-        startTimeEvent = Time.realtimeSinceStartup;
-    }
-    public static void SetEndEvent()
-    {
-        totalTimeEvent += Time.realtimeSinceStartup - startTimeEvent;
-        totalMethodEvent++;
-    }
-
-    public static void ShowResults() { 
-        Debug.Log("Total MethodInfo calls: " + totalMethodInfoCalls);
-        Debug.Log("Average time spent in MethodInfo: " + ((totalTimeMethodInfo / totalMethodInfoCalls)*1000) + " ms");
-
-        Debug.Log("Total Delegate calls: " + totalMethodDelegate);
-        Debug.Log("Average time spent in Delegate: " + ((totalTimeDelegate / totalMethodDelegate)*1000) + " ms");
-
-        Debug.Log("Total Event calls: " + totalMethodEvent);
-        Debug.Log("Average time spent in Event: " + ((totalTimeEvent / totalMethodEvent)*1000) + " ms");
-
-        Debug.Log("Total Time: " + timeSinceStartup + " seconds");
-    }
-}
-
 
 
 
@@ -225,7 +161,6 @@ public class DelegateContainer<R> : DelegateContainerBase, ISerializationCallbac
 
     public R Invoke(object[] p = null)
     {
-        ExecutionTester.SetStartMethodInfo();
         return method == null ? default(R) : (R)method.Invoke(delegateScript, p == null ? backEndParameters : p);
     }
 
@@ -287,7 +222,6 @@ public class DelegateContainer<R, P1> : DelegateContainerBase, ISerializationCal
 
     public R Invoke(P1 param)
     {
-        ExecutionTester.SetStartDelegate();
         return del == null ? default(R) : del.Invoke(param);
     }
 

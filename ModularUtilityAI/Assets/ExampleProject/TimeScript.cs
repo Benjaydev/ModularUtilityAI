@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TimeScript : MonoBehaviour
@@ -30,7 +28,6 @@ public class TimeScript : MonoBehaviour
 
     public bool TimeOfDayWithinRange(float min, float max)
     {
-        ExecutionTester.SetEndMethodInfo();
         return timeOfDay >= min && timeOfDay <= max;
     }
 }

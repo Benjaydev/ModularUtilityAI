@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 public interface IUtilityAIMethods
@@ -46,6 +43,7 @@ public class UtilityAI : MonoBehaviour
 
     public bool showDebug = false;
     public Vector3 valueDisplayAreaOffset = new Vector3(0,0,0);
+    public int debugFontSize = 1;
 
 
     protected virtual void Awake()
@@ -90,10 +88,6 @@ public class UtilityAI : MonoBehaviour
         // If there is no current behaviour or behaviour has no conditions
         if (currentBehaviour != null && currentBehaviour.IsActive())
         {
-            if (currentBehaviour.WhenActive.GetPersistentEventCount() > 0)
-            {
-                ExecutionTester.SetStartEvent();
-            }
             // Call the events that should happen when this behaviour is active
             currentBehaviour.WhenActive.Invoke();
 
@@ -147,7 +141,6 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public static int GetIndexOfRandomisedWeights(float[] weights)
     {
-        ExecutionTester.SetEndDelegate();
         // Get total sum
         float sum = 0;
         for (int i = 0; i < weights.Length; i++)
@@ -178,7 +171,6 @@ public class UtilityAI : MonoBehaviour
     }
     public static int GetIndexOfHighestWeight(float[] weights)
     {
-        ExecutionTester.SetEndDelegate();
         int highestIndex = 0;
         float highestWeight = weights[0];
         // Find the value that pushes sum above random value
@@ -195,7 +187,6 @@ public class UtilityAI : MonoBehaviour
     }
     public static int GetIndexOfLowestWeight(float[] weights)
     {
-        ExecutionTester.SetEndDelegate();
         int lowestIndex = 0;
         float lowestWeight = weights[0];
         // Find the value that pushes sum above random value
@@ -221,51 +212,43 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public bool TimerCondition(float duration, bool unscaledTime, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         return owner.TimerCondition(duration, unscaledTime, behaviourSelectorCooldown);
     }
 
     // Score comparisons
     public bool ScoreLessThan(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score < value;
     }
     public bool ScoreGreaterThan(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score > value;
     }
     public bool ScoreLessThanOrEqualTo(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score <= value;
     }
     public bool ScoreGreaterThanOrEqualTo(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score <= value;
     }
     public bool ScoreEqualTo(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score == value;
     }
     public bool ScoreNotEqualTo(float value, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score != value;
     }
 
     public bool ScoreWithinRange(float min, float max, bool rawScore, UAIBehaviour owner)
     {
-        ExecutionTester.SetEndMethodInfo();
         float score = rawScore ? owner.GetCurrentRawValue() : owner.GetCurrentValue();
         return score >= min && score <= max;
     }
@@ -280,17 +263,14 @@ public class UtilityAI : MonoBehaviour
     // ----------------------------------
     public static float EvaluateToOne(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return 1f;
     }
     public static float EvaluateToMin(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return behaviour.expectedValueRangeMin;
     }
     public static float EvaluateToMax(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return behaviour.expectedValueRangeMax;
     }
     // ----------------------------------
@@ -382,31 +362,24 @@ public class UtilityAI : MonoBehaviour
             "        base.Awake();\r\n";
 
 
-        string templateUpdate =
-            "    // Update is called once per frame\r\n" +
-            "    protected override void Update()\r\n" +
-            "    {\r\n" +
-            "        base.Update();\r\n";
-
 
         string templateGizmos =
-            "#if UNITY_EDITOR\r\n" +
             "    // Update is called once per frame\r\n" +
-            "    private void OnDrawGizmos()\r\n" +
+            "    private void OnGUI()\r\n" +
             "    {\r\n" +
-            "       if(showDebug) {\r\n" +
-            "           var pos = transform.position + valueDisplayAreaOffset;\r\n" +
-            "           float dist = (Camera.current.transform.position - pos).sqrMagnitude;\r\n" +
+            "       if(showDebug && Camera.main != null) {\r\n" +
+            "           Vector3 pos = transform.position + valueDisplayAreaOffset;\r\n" +
+            "           float dist = (Camera.main.transform.position - pos).sqrMagnitude;\r\n" +
             "           if(dist < 40000)\r\n" +
             "           {\r\n" +
-            "               dist = Mathf.Sqrt(dist) / 10;\r\n" +
             "               GUIStyle guiStyle = new GUIStyle();\r\n" +
-            "               guiStyle.alignment = TextAnchor.MiddleCenter;\r\n" +
             "               guiStyle.normal.textColor = Color.red;\r\n" +
-            "               guiStyle.fontSize = (int)(20f / dist);\r\n" +
-            "               float textSeperation = 0.4f;\r\n" +
-            "               Vector2 dimensions = new Vector2(1, 0.4f*" + behavioursToGenerate.Length + ");\r\n\r\n" +
-            "               Handles.Label(pos + new Vector3(0, dimensions.y * 2, 0), \"Current: \" + (currentBehaviour != null ? currentBehaviour.displayName : \"None\"), guiStyle);\r\n";
+            "               guiStyle.alignment = TextAnchor.MiddleCenter;\r\n" +
+            "               dist = Mathf.Sqrt(dist) / 10;\r\n" +
+            "               guiStyle.fontSize = (int)(20f / dist) * debugFontSize;\r\n" +
+            "               float textSeperation = 13f * (2f / dist);\r\n" +
+            "               Vector2 screenPos = Camera.main.WorldToScreenPoint(pos);\r\n" +
+            "               GUI.Label(new Rect(screenPos.x-45, Screen.height - screenPos.y - 10, 45, 10), \"Current: \" + (currentBehaviour != null ? currentBehaviour.displayName : \"None\"), guiStyle);\r\n";
 
 
         for (int i = 0; i < behavioursToGenerate.Length; i++)
@@ -421,17 +394,14 @@ public class UtilityAI : MonoBehaviour
             templateAwake += "        behaviours.Add(B_" + behavioursToGenerate[i].name + ");\r\n";
 
 
-            templateGizmos += "               Handles.Label(pos + new Vector3(0, dimensions.y * 2-(textSeperation*" + (i + 1) + "), 0), \"" + behavioursToGenerate[i].name + ": \" + (Mathf.Round(B_" + behavioursToGenerate[i].name + ".GetCurrentValue()*100) / 100).ToString(), guiStyle);\r\n";
-
-            //templateUpdate += "        Debug.Log(\"" + fields[i].name + "\");\r\n";
+            templateGizmos += "               GUI.Label(new Rect(screenPos.x - 45, Screen.height - screenPos.y - 10 + (textSeperation * " + (i + 1) + "), 45, 10), \"" + behavioursToGenerate[i].name + ": \" + (Mathf.Round(B_" + behavioursToGenerate[i].name + ".GetCurrentValue()*100) / 100).ToString(), guiStyle);\r\n";
         }
 
         templateAwake += "    }\r\n\r\n";
 
-        templateUpdate += "    }\r\n\r\n";
-        templateGizmos += "        }    }\r\n    }\r\n#endif";
+        templateGizmos += "        }\r\n    }\r\n    }\r\n";
 
-        return templateBeginning + templateParameters + templateBehaviourNamesField + templateAwake + templateUpdate + templateGizmos + "\r\n}";
+        return templateBeginning + templateParameters + templateBehaviourNamesField + templateAwake + templateGizmos + "\r\n}";
     }
 
 #endif

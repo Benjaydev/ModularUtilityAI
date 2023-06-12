@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,7 +24,7 @@ public class AITest : UtilityAI_AITest
     private GameObject model;
 
 
-    private static List<GameObject> instances = new List<GameObject>();
+    public static List<GameObject> instances = new List<GameObject>();
     private List<GameObject> otherAI = new List<GameObject>();
 
     private Transform closestTalker;
@@ -49,12 +48,6 @@ public class AITest : UtilityAI_AITest
 
     public void AIUpdate()
     {
-        ExecutionTester.timeSinceStartup += Time.deltaTime;
-        if (ExecutionTester.timeSinceStartup > 300)
-        {
-            ExecutionTester.ShowResults();
-            ExecutionTester.timeSinceStartup = 0;
-        }
 
         // Keep track of all other ai
         if(instances.Count > otherAI.Count+1)
@@ -83,29 +76,24 @@ public class AITest : UtilityAI_AITest
 
     public float HungerEvaluator(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return hunger;
     }
     public float ThirstEvaluator(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return thirst;
     }
 
     public float WanderEvaluator(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return 1 - ((B_Eat.GetCurrentValue()+ B_Drink.GetCurrentValue() + B_Sleep.GetCurrentValue() + B_Talk.GetCurrentValue()) / 4);
     }
     public float SleepEvaluator(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         return tiredness;
     }
 
     public float TalkEvaluator(UAIBehaviour behaviour)
     {
-        ExecutionTester.SetEndDelegate();
         Transform closest = FindClosest(otherAI);
 
         if (Physics.Raycast(transform.position, closest.position - transform.position, out RaycastHit hit, 100))
@@ -123,7 +111,6 @@ public class AITest : UtilityAI_AITest
 
     public void DrinkStart()
     {
-        ExecutionTester.SetEndEvent();
         agent.SetDestination(FindClosest(waterSources).position);
         ResetAnimations();
         animator.SetBool("Wander", true);
@@ -131,7 +118,6 @@ public class AITest : UtilityAI_AITest
     }
     public void DrinkActive()
     {
-        ExecutionTester.SetEndEvent();
         if (IsAtDestination(3))
         {
             thirst = Mathf.Max(0, thirst - (Time.deltaTime/2));
@@ -147,14 +133,12 @@ public class AITest : UtilityAI_AITest
 
     public void WanderStart()
     {
-        ExecutionTester.SetEndEvent();
         agent.SetDestination(RandomPointInBounds(walkArea.bounds));
         ResetAnimations();
         animator.SetBool("Wander", true);
     }
     public void WanderActive()
     {
-        ExecutionTester.SetEndEvent();
         if (agent.isStopped || IsAtDestination(3))
         {
             agent.SetDestination(RandomPointInBounds(walkArea.bounds));
@@ -164,14 +148,12 @@ public class AITest : UtilityAI_AITest
 
     public void EatStart()
     {
-        ExecutionTester.SetEndEvent();
         agent.SetDestination(FindClosest(foodSources).position);
         ResetAnimations();
         animator.SetBool("Wander", true);
     }
     public void EatActive()
     {
-        ExecutionTester.SetEndEvent();
         if (IsAtDestination(3))
         {
             hunger = Mathf.Max(0, hunger - (Time.deltaTime/10));
@@ -185,7 +167,6 @@ public class AITest : UtilityAI_AITest
 
     public void SleepStart()
     {
-        ExecutionTester.SetEndEvent();
         agent.SetDestination(FindRandom(beds).position);
         ResetAnimations();
         animator.SetBool("Wander", true);
@@ -193,7 +174,6 @@ public class AITest : UtilityAI_AITest
     }
     public void SleepActive()
     {
-        ExecutionTester.SetEndEvent();
         if (IsAtDestination(3))
         {
             tiredness = Mathf.Max(0f, tiredness - Time.deltaTime / (TimeScript.instance.cycleDurationSeconds / 2) * (TimeScript.instance.timeOfDay >= 0.75f || TimeScript.instance.timeOfDay <= 0.25f ? 2 : 1));
@@ -208,14 +188,12 @@ public class AITest : UtilityAI_AITest
     }
     public void SleepEnd()
     {
-        ExecutionTester.SetEndEvent();
         ResetAnimations();
         model.transform.localPosition = new Vector3(0, 0, 0);
     }
 
     public void TalkStart()
     {
-        ExecutionTester.SetEndEvent();
         closestTalker = FindClosest(otherAI).transform;
         agent.SetDestination(transform.position);
         ResetAnimations();
@@ -223,7 +201,6 @@ public class AITest : UtilityAI_AITest
     }
     public void TalkActive()
     {
-        ExecutionTester.SetEndEvent();
         transform.rotation = Quaternion.LookRotation(closestTalker.position - transform.position);
         transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z));
     }

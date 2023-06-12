@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using Unity.VisualScripting;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 [CustomPropertyDrawer(typeof(DelegateContainer<,>))]
 public class DelegateContainerDrawer : PropertyDrawer
@@ -61,10 +60,8 @@ public class DelegateContainerDrawer : PropertyDrawer
 
         if (selectedObject != null)
         {
-
             List<MethodInfo> infos = new List<MethodInfo>();
             List<MonoBehaviour> infosScripts = new List<MonoBehaviour>();
-
 
             // Search all scripts on selected object
             foreach (MonoBehaviour script in selectedObject.GetComponents<MonoBehaviour>())
@@ -95,12 +92,8 @@ public class DelegateContainerDrawer : PropertyDrawer
                             infos.Add(info);
                         }
                     }
-
-
                 }
             }
-
-
 
             // Get names of methods
             string[] names = new string[infos.Count];
@@ -138,10 +131,7 @@ public class DelegateContainerDrawer : PropertyDrawer
                 EditorGUI.Popup(methodRect, 0, new string[1] { "None" });
 
                 GUI.enabled = true;
-
             }
-
-
         }
         // Object is null
         else
@@ -158,6 +148,8 @@ public class DelegateContainerDrawer : PropertyDrawer
 
     }
 
+
+    // Custom drawer for MethodInfo DelegateContainer 
 
     [CustomPropertyDrawer(typeof(DelegateContainer<>))]
     public class DelegateContainerDrawerSingle : PropertyDrawer
@@ -193,17 +185,10 @@ public class DelegateContainerDrawer : PropertyDrawer
             // Get return type property
             SerializedProperty delegateTypeName = property.FindPropertyRelative("typeName");
 
-
-            // Create title label
-            Rect methodLabel = new Rect(position.x + 4 + position.width / 2, position.y, position.width, 21f);
-            //EditorGUI.LabelField(methodLabel, new GUIContent(delegateTypeName.stringValue));
-
             if (selectedObject != null)
             {
-
                 List<MethodInfo> infos = new List<MethodInfo>();
                 List<MonoBehaviour> infosScripts = new List<MonoBehaviour>();
-
 
                 // Search all scripts on selected object
                 foreach (MonoBehaviour script in selectedObject.GetComponents<MonoBehaviour>())
